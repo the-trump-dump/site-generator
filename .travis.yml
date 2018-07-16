@@ -1,0 +1,4 @@
+install: echo "hello world"
+script:
+ - "./deploy/cf.sh"
+ - "./deploy/deploy.sh"  

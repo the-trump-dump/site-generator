@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=ttd.git.GitTemplateAutoConfiguration,\
+  ttd.templates.TemplateServiceAutoConfiguration
