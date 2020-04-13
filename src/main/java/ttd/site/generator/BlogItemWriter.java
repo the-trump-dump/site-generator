@@ -1,5 +1,6 @@
 package ttd.site.generator;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -20,17 +21,12 @@ import java.util.stream.Collectors;
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
+@RequiredArgsConstructor
 class BlogItemWriter implements ItemWriter<Map<String, Collection<Bookmark>>> {
 
 	private final TemplateService templateService;
 
 	private final SiteGeneratorConfigurationProperties siteGeneratorConfigurationProperties;
-
-	BlogItemWriter(TemplateService templateService,
-			SiteGeneratorConfigurationProperties siteGeneratorConfigurationProperties) {
-		this.siteGeneratorConfigurationProperties = siteGeneratorConfigurationProperties;
-		this.templateService = templateService;
-	}
 
 	private Date fromPublishKey(String pk) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -44,14 +40,13 @@ class BlogItemWriter implements ItemWriter<Map<String, Collection<Bookmark>>> {
 	private String uniquePublishKey(String pk, Bookmark bookmark) {
 		Assert.notNull(pk, "the publishKey argument must not be null");
 		Assert.notNull(bookmark, "the bookmark must not be null");
-		return /* pk + ":" + */ Long.toString(bookmark.getBookmarkId());
+		return Long.toString(bookmark.getBookmarkId());
 	}
 
 	private void writeBlog(String publishKey, Collection<Bookmark> bookmarks) {
 		Date date = fromPublishKey(publishKey);
 		String pk = publishKey.split(" ")[0].trim();
 		File file = new File(this.siteGeneratorConfigurationProperties.getContentDirectory(), pk + ".html");
-
 		Set<Link> links = bookmarks.stream()
 				.map(bm -> new Link(uniquePublishKey(publishKey, bm), bm.getHref(), bm.getDescription(), bm.getTime()))
 				.collect(Collectors.toSet());

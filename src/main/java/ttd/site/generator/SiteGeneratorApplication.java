@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.util.FileSystemUtils;
 
 /**
-	* @author <a href="mailto:josh@joshlong.com">Josh Long</a>
-	*/
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 @Log4j2
 @SpringBootApplication
 @EnableConfigurationProperties(SiteGeneratorConfigurationProperties.class)
@@ -19,4 +19,5 @@ public class SiteGeneratorApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SiteGeneratorApplication.class, args);
 	}
+
 }

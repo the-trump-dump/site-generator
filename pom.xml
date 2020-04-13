@@ -140,7 +140,46 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>libs-release</name>
+            <url>
+                https://cloudnativejava.jfrog.io/cloudnativejava/libs-release
+            </url>
+        </repository>
+        <repository>
+            <snapshots/>
+            <id>snapshots</id>
+            <name>libs-snapshot</name>
+            <url>
+                https://cloudnativejava.jfrog.io/cloudnativejava/libs-snapshot
+            </url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>plugins-release</name>
+            <url>
+                https://cloudnativejava.jfrog.io/cloudnativejava/plugins-release
+            </url>
+        </pluginRepository>
+        <pluginRepository>
+            <snapshots/>
+            <id>snapshots</id>
+            <name>plugins-snapshot</name>
+            <url>
+                https://cloudnativejava.jfrog.io/cloudnativejava/plugins-snapshot
+            </url>
+        </pluginRepository>
+    </pluginRepositories>
 </project>

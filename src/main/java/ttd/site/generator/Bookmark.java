@@ -9,6 +9,9 @@ import java.util.Collection;
 import java.util.Date;
 
 /**
+ *
+ * This represents an item read from the DB `bookmark` table.
+ *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 @Data

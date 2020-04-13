@@ -1,61 +1,60 @@
 package ttd.site.generator;
 
-import com.joshlong.git.GitTemplate;
-import org.eclipse.jgit.api.errors.GitAPIException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.batch.item.database.JdbcCursorItemReader;
+import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
+import org.springframework.batch.item.json.JacksonJsonObjectMarshaller;
+import org.springframework.batch.item.json.JsonFileItemWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.jdbc.core.RowMapper;
 
+import javax.sql.DataSource;
 import java.io.File;
-import java.nio.file.Files;
-import java.time.Instant;
 
 /**
-	* @author <a href="mailto:josh@joshlong.com">Josh Long</a>
-	*/
+ * This step writes all the links into a giant `.json` file that a dynamic website could
+ * use
+ */
 @Configuration
-class Step3Configuration {
+@RequiredArgsConstructor
+public class Step3Configuration {
+
+	private final DataSource dataSource;
+
+	private final RowMapper<Bookmark> bookmarkRowMapper = new BookmarkRowMapper();
+
+	private final SiteGeneratorConfigurationProperties siteGeneratorConfigurationProperties;
 
 	private final StepBuilderFactory sbf;
 
-	private final GitTemplate gitTemplate;
+	@Bean("step3Reader")
+	JdbcCursorItemReader<Bookmark> reader() {
+		return new JdbcCursorItemReaderBuilder<Bookmark>()//
+				.sql("select * from bookmark order by publish_key")//
+				.dataSource(this.dataSource)//
+				.rowMapper(this.bookmarkRowMapper) //
+				.name(getClass().getSimpleName() + "#reader") //
+				.build();
+	}
 
-	private final SiteGeneratorConfigurationProperties properties;
-
-	Step3Configuration(StepBuilderFactory sbf, GitTemplate gitTemplate,
-																				SiteGeneratorConfigurationProperties properties) {
-		this.sbf = sbf;
-		this.gitTemplate = gitTemplate;
-		this.properties = properties;
+	@Bean("step3Writer")
+	JsonFileItemWriter<Bookmark> writer() {
+		var file = new File(this.siteGeneratorConfigurationProperties.getContentDirectory(), "bookmarks.json");
+		var resource = new FileSystemResource(file);
+		return new JsonFileItemWriter<>(resource, new JacksonJsonObjectMarshaller<>());
 	}
 
 	@Bean("step3")
 	Step step() {
-		return this.sbf //
-			.get("step3") //
-			.tasklet((stepContribution, chunkContext) -> { //
-				this.gitTemplate.executeAndPush(g -> {
-					File directory = properties.getContentDirectory();
-					Files.walk(directory.toPath()).forEach(file -> {
-						try {
-							g.add().addFilepattern(file.toFile().getName()).call();
-						}
-						catch (GitAPIException e) {
-							ReflectionUtils.rethrowRuntimeException(e);
-						}
-					});
-					g.commit()//
-						.setAll(true) //
-						.setMessage("batch @ " + Instant.now().toString()) //
-						.setAllowEmpty(true)//
-						.call();
-				});
-				return RepeatStatus.FINISHED;
-			})//
-			.build();
+		return this.sbf.get("step3")//
+				.<Bookmark, Bookmark>chunk(1000)//
+				.reader(reader())//
+				.writer(writer())//
+				.build();
 	}
 
 }

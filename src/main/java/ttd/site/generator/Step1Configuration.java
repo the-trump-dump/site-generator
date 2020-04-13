@@ -9,6 +9,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
+ * This step looks at every bookmark in the databases, assigns it a publish key
+ * (basically, the year/month/day of the article, to support grouping).
+ *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 @Configuration
