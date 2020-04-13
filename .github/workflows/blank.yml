@@ -1,15 +1,13 @@
 name: CI
 
 env:
-  CF_USER: ${{ secrets.CF_USER }}
-  CF_PASSWORD: ${{ secrets.CF_PASSWORD }}
-  CF_SPACE: ${{ secrets.CF_SPACE }}
-  CF_API: ${{ secrets.CF_API }}
-  CF_ORG: ${{ secrets.CF_ORG  }}
   ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME  }}
   ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD  }}
   GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
   GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
+  SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+  SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+  SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
 
 on:
   push:
