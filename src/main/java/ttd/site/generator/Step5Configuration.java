@@ -1,6 +1,7 @@
 package ttd.site.generator;
 
 import com.joshlong.git.GitTemplate;
+import lombok.RequiredArgsConstructor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -19,8 +20,11 @@ import java.time.Instant;
  *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
+@RequiredArgsConstructor
 @Configuration
 class Step5Configuration {
+
+	private final static String STEP_NAME = "step5";
 
 	private final StepBuilderFactory sbf;
 
@@ -28,17 +32,10 @@ class Step5Configuration {
 
 	private final SiteGeneratorConfigurationProperties properties;
 
-	Step5Configuration(StepBuilderFactory sbf, GitTemplate gitTemplate,
-			SiteGeneratorConfigurationProperties properties) {
-		this.sbf = sbf;
-		this.gitTemplate = gitTemplate;
-		this.properties = properties;
-	}
-
-	@Bean("step5")
+	@Bean(STEP_NAME)
 	Step step() {
 		return this.sbf //
-				.get("step5") //
+				.get(STEP_NAME) //
 				.tasklet((stepContribution, chunkContext) -> { //
 					this.gitTemplate.executeAndPush(git -> {
 						File directory = properties.getContentDirectory();

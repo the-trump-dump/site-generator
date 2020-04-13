@@ -18,13 +18,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @RequiredArgsConstructor
 class Step1Configuration {
 
+	private final static String STEP_NAME = "step1";
+
 	private final JdbcTemplate jdbcTemplate;
 
 	private final StepBuilderFactory stepBuilderFactory;
 
-	@Bean("step1")
+	@Bean(STEP_NAME)
 	public Step step() {
-		return this.stepBuilderFactory.get("step1") //
+		return this.stepBuilderFactory.get(STEP_NAME) //
 				.tasklet((stepContribution, chunkContext) -> { //
 					jdbcTemplate.update(" update bookmark set publish_key = concat( date_trunc( 'day' , time) || '') ");
 					return RepeatStatus.FINISHED;

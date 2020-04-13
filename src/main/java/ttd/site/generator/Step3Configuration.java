@@ -23,6 +23,8 @@ import java.io.File;
 @RequiredArgsConstructor
 public class Step3Configuration {
 
+	private final static String STEP_NAME = "step3";
+
 	private final DataSource dataSource;
 
 	private final RowMapper<Bookmark> bookmarkRowMapper = new BookmarkRowMapper();
@@ -31,7 +33,7 @@ public class Step3Configuration {
 
 	private final StepBuilderFactory sbf;
 
-	@Bean("step3Reader")
+	@Bean(STEP_NAME + "Reader")
 	JdbcCursorItemReader<Bookmark> reader() {
 		return new JdbcCursorItemReaderBuilder<Bookmark>()//
 				.sql("select * from bookmark order by publish_key")//
@@ -41,16 +43,16 @@ public class Step3Configuration {
 				.build();
 	}
 
-	@Bean("step3Writer")
+	@Bean(STEP_NAME + "Writer")
 	JsonFileItemWriter<Bookmark> writer() {
 		var file = new File(this.siteGeneratorConfigurationProperties.getContentDirectory(), "bookmarks.json");
 		var resource = new FileSystemResource(file);
 		return new JsonFileItemWriter<>(resource, new JacksonJsonObjectMarshaller<>());
 	}
 
-	@Bean("step3")
+	@Bean(STEP_NAME)
 	Step step() {
-		return this.sbf.get("step3")//
+		return this.sbf.get(STEP_NAME)//
 				.<Bookmark, Bookmark>chunk(1000)//
 				.reader(reader())//
 				.writer(writer())//

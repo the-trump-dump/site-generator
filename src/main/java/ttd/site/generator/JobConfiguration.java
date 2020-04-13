@@ -22,14 +22,17 @@ class JobConfiguration {
 
 	private final Step3Configuration s3;
 
+	private final Step4Configuration s4;
+
 	private final Step5Configuration s5;
 
 	JobConfiguration(JobBuilderFactory jobBuilderFactory, Step1Configuration s1, Step2Configuration s2,
-			Step3Configuration s3, Step5Configuration s5) {
+			Step3Configuration s3, Step4Configuration s4, Step5Configuration s5) {
 		this.jobBuilderFactory = jobBuilderFactory;
 		this.s1 = s1;
 		this.s2 = s2;
 		this.s3 = s3;
+		this.s4 = s4;
 		this.s5 = s5;
 	}
 
@@ -39,6 +42,7 @@ class JobConfiguration {
 				.start(s1.step()) //
 				.next(s2.step())//
 				.next(s3.step())//
+				// .next(s4.step())//
 				.next(s5.step())//
 				.incrementer(new RunIdIncrementer())//
 				.build();
