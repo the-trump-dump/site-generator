@@ -26,6 +26,8 @@ class JobConfiguration {
 
 	private final Step5Configuration s5;
 
+	private final Step6Configuration s6;
+
 	private final StepStopConfiguration ss;
 
 	JobConfiguration(JobBuilderFactory jobBuilderFactory, //
@@ -34,6 +36,7 @@ class JobConfiguration {
 			Step3Configuration s3, //
 			Step4Configuration s4, //
 			Step5Configuration s5, //
+			Step6Configuration s6, //
 			StepStopConfiguration ss) {
 		this.jobBuilderFactory = jobBuilderFactory;
 		this.s1 = s1;
@@ -41,6 +44,7 @@ class JobConfiguration {
 		this.s3 = s3;
 		this.s4 = s4;
 		this.s5 = s5;
+		this.s6 = s6;
 		this.ss = ss;
 	}
 
@@ -52,6 +56,7 @@ class JobConfiguration {
 				.next(s3.step())//
 				.next(s4.step())//
 				.next(s5.step())//
+				.next(s6.step())//
 				.next(ss.step())//
 				.incrementer(new RunIdIncrementer())//
 				.build();

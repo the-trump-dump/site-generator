@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Log4j2
 class MustacheTemplateService implements TemplateService {
 
 	private final String URL_MARKER = "_URL_";
@@ -33,25 +34,27 @@ class MustacheTemplateService implements TemplateService {
 
 	private final Mustache.Compiler compiler;
 
-	private final Template daily, monthly, index, _frame;
+	private final Template daily, monthly, index, _list, _frame;
 
 	private final PropertyDescriptor[] propertyDescriptors = BeanUtils.getPropertyDescriptors(Link.class);
 
 	private final Parser parser = Parser.builder().build();
 
 	MustacheTemplateService(Mustache.Compiler compiler, Resource daily, Resource index, Resource monthly,
-			Resource frame, Charset charset) throws Exception {
-		Assert.notNull(compiler, "the compiler must not be null");
-		Assert.notNull(charset, "the charset must not be null");
-		Assert.notNull(daily, "the daily template must not be null");
-		Assert.notNull(index, "the index template must not be null");
+			Resource frame, Resource list, Charset charset) throws Exception {
 
 		this.compiler = compiler;
 		this.charset = charset.name();
+		Assert.notNull(this.compiler, "the compiler should not be null");
+		Assert.notNull(this.charset, "the charset should not be null");
 		this.daily = createTemplate(daily);
 		this.index = createTemplate(index);
 		this.monthly = createTemplate(monthly);
+		this._list = createTemplate(list);
 		this._frame = createTemplate(frame);
+
+		List.of(this.daily, this.index, this.monthly, this._list, this._frame)
+				.forEach(t -> Assert.notNull(t, "the template should not be null"));
 	}
 
 	@Data
@@ -88,6 +91,55 @@ class MustacheTemplateService implements TemplateService {
 		return this.frame(this.monthly.execute(map));
 	}
 
+	/**
+	 * this renders a page that has the years and the months, as well as the latest
+	 * month's worth of content.
+	 */
+	@Override
+	public String index(List<YearMonth> yearAndMonths) {
+
+		Assert.isTrue(yearAndMonths.size() > 0,
+				"there must be at least one element in the " + YearMonth.class.getName() + " collection.");
+
+		var latest = yearAndMonths.get(0);
+		var file = latest.toString() + ".html";
+
+		var yearToMonths = new HashMap<String, List<YearMonth>>();
+		yearAndMonths.forEach(ym -> yearToMonths.computeIfAbsent(ym.getYear() + "", key -> new ArrayList<>()).add(ym));
+
+		var sortedYears = new ArrayList<>(yearToMonths.keySet());
+		sortedYears.sort(Comparator.naturalOrder());
+
+		var htmlForEachYear = sortedYears // the goal here is to build up the HTML for
+											// each year for the index
+				.stream().map(year -> {
+					var months = yearToMonths.get(year);
+					months.sort(YearMonth::compareTo);
+					return renderYearFragmentGiven(year, months);
+				}) //
+				.collect(Collectors.toList());
+
+		var context = Map.of("years", htmlForEachYear, "latest", latest.toString());
+		var index = this.index.execute(context);
+		return frame(index);
+	}
+
+	private String renderYearFragmentGiven(String year, List<YearMonth> months) {
+		// todo render the months
+		// todo this should be moved into a mustache template
+		String format = """
+				 <div>
+						<H1> %s </H1>
+						<DIV> %s </DIV>
+				</div>
+
+					""".strip();
+		Stream<String> stringStream = months.stream().map(ym -> String.format("""
+				<a href="%s.html">%s</a>
+				""", ym.toString(), ym.toString()));
+		return String.format(format, year, stringStream.collect(Collectors.joining()));
+	}
+
 	private Map<String, Object> buildMapForLink(Link lien) {
 		Map<String, Object> linkMapForRendering = new HashMap<>();
 		// copy over attributes for javabean properties on the `Link` class.
@@ -114,12 +166,6 @@ class MustacheTemplateService implements TemplateService {
 
 		linkMapForRendering.put("html", html);
 		return linkMapForRendering;
-	}
-
-	@Override
-	public String index(Collection<Link> links) {
-		Map<String, Object> context = buildDefaultContextFor(links);
-		return this.frame(this.index.execute(context));
 	}
 
 	@Override

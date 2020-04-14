@@ -23,6 +23,9 @@ class TemplateServiceConfigurationProperties {
 	@Value("classpath:/templates/_frame.mustache")
 	private Resource frame;
 
+	@Value("classpath:/templates/_list-and-header.mustache")
+	private Resource list;
+
 	private Charset charset = Charset.defaultCharset();
 
 }

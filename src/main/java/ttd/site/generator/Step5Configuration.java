@@ -43,7 +43,7 @@ class Step5Configuration {
 	@Bean(STEP_NAME + "Reader")
 	JdbcCursorItemReader<YearMonth> reader() {
 		return new JdbcCursorItemReaderBuilder<YearMonth>()//
-				.sql("select * from bookmark_years_months bym ")//
+				.sql("select * from bookmark_years_months bym")//
 				.dataSource(this.dataSource)//
 				.rowMapper((rs, i) -> new YearMonth(rs.getInt("year"), rs.getInt("month"))) //
 				.name(getClass().getSimpleName() + "#reader") //
@@ -53,7 +53,7 @@ class Step5Configuration {
 	@Bean(STEP_NAME + "Processor")
 	ItemProcessor<YearMonth, Bookmarks> processor() {
 		return ym -> {
-			var bookmarkList =  template.query(
+			var bookmarkList = template.query(
 					"select * from bookmark b where date_part('month', time) = ? and date_part('year', time) = ? ",
 					new Object[] { ym.getMonth(), ym.getYear() }, new BookmarkRowMapper());
 			return new Bookmarks(ym, bookmarkList);

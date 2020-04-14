@@ -6,7 +6,7 @@ import org.springframework.util.Assert;
 
 @Data
 @RequiredArgsConstructor
-class YearMonth {
+class YearMonth implements Comparable {
 
 	private final int year, month;
 
@@ -36,6 +36,14 @@ class YearMonth {
 		stringBuilder.append('-');
 		stringBuilder.append(m < 10 ? lpad(monthAsString, 2, "0") : monthAsString);
 		return stringBuilder.toString();
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		if (o instanceof YearMonth ym) {
+			return ym.toString().compareTo(toString());
+		}
+		return -1;
 	}
 
 }

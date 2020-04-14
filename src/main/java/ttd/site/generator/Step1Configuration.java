@@ -30,7 +30,7 @@ class Step1Configuration {
 				.get(STEP_NAME) //
 				.tasklet((stepContribution, chunkContext) -> { //
 					var sql = " update bookmark set publish_key = concat( date_part('year', time) || '-' || lpad ('' || date_part('month', time) , 2, '0' )  || '-'|| lpad(  ''||date_part( 'day' , time)  , 2  ,'0') || '')  ";
-				 template.update(sql);
+					template.update(sql);
 					return RepeatStatus.FINISHED;
 				})//
 				.build();
