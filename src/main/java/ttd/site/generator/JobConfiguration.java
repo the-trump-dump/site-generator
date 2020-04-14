@@ -28,7 +28,8 @@ class JobConfiguration {
 
 	private final StepStopConfiguration ss;
 
-	JobConfiguration(JobBuilderFactory jobBuilderFactory, Step1Configuration s1, //
+	JobConfiguration(JobBuilderFactory jobBuilderFactory, //
+			Step1Configuration s1, //
 			Step2Configuration s2, //
 			Step3Configuration s3, //
 			Step4Configuration s4, //

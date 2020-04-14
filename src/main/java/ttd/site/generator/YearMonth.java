@@ -8,6 +8,8 @@ import org.springframework.util.Assert;
 @RequiredArgsConstructor
 class YearMonth {
 
+	private final int year, month;
+
 	@Override
 	public String toString() {
 		return yearMonthKey(this);
@@ -35,7 +37,5 @@ class YearMonth {
 		stringBuilder.append(m < 10 ? lpad(monthAsString, 2, "0") : monthAsString);
 		return stringBuilder.toString();
 	}
-
-	private final int year, month;
 
 }

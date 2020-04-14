@@ -1,6 +1,5 @@
 package ttd.site.generator;
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.batch.core.Step;
@@ -20,7 +19,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
@@ -40,24 +38,9 @@ class Step5Configuration {
 
 	private final DataSource dataSource;
 
+	private final BookmarkDbService bookmarkDbService;
+
 	private final TemplateService templateService;
-
-	@Data
-	static class Bookmarks {
-
-		private final Comparator<Bookmark> comparator = Comparator.comparing(Bookmark::getTime).reversed();
-
-		private final YearMonth yearMonth;
-
-		private final List<Bookmark> bookmarks;
-
-		public Bookmarks(YearMonth yearMonth, List<Bookmark> bookmarks) {
-			this.yearMonth = yearMonth;
-			bookmarks.sort(comparator);
-			this.bookmarks = bookmarks;
-		}
-
-	}
 
 	@Bean(STEP_NAME + "Reader")
 	JdbcCursorItemReader<YearMonth> reader() {
@@ -71,7 +54,12 @@ class Step5Configuration {
 
 	@Bean(STEP_NAME + "Processor")
 	ItemProcessor<YearMonth, Bookmarks> processor() {
-		return this::getBookmarksForYearAndMonth;
+		return ym -> {
+			var bookmarkList = this.bookmarkDbService.template.query(
+					"select * from bookmark b where date_part('month', time) = ? and date_part('year', time) = ? ",
+					new Object[] { ym.getMonth(), ym.getYear() }, new BookmarkRowMapper());
+			return new Bookmarks(ym, bookmarkList);
+		};
 	}
 
 	@Bean(STEP_NAME + "Writer")
@@ -88,13 +76,6 @@ class Step5Configuration {
 				.processor(processor())//
 				.writer(writer())//
 				.build();
-	}
-
-	private Bookmarks getBookmarksForYearAndMonth(YearMonth ym) {
-		var bookmarkList = this.template.query(
-				"select * from bookmark b where date_part('month', time) = ? and date_part('year', time) = ? ",
-				new Object[] { ym.getMonth(), ym.getYear() }, new BookmarkRowMapper());
-		return new Bookmarks(ym, bookmarkList);
 	}
 
 	private void writeYearAndMonthBlog(YearMonth ym, List<Bookmark> bookmarks) {

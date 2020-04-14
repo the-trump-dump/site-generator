@@ -28,27 +28,12 @@ class Step4Configuration {
 		return this.sbf //
 				.get(STEP_NAME) //
 				.tasklet((stepContribution, chunkContext) -> { //
-					// first break the years and months down
 					this.jdbcTemplate.update("insert into bookmark_years_months (year, month, ym_key) "
 							+ "select date_part('year', time), date_part('month', time), concat(date_part('year', time) || '-' || date_part('month', time)) from bookmark b "
 							+ "on conflict on constraint bookmark_years_months_ym_key_key do nothing  ");
-					// { years -> { months -> publish_keys }}
-					// var yearsAndMonths = this.jdbcTemplate.query("select * from
-					// bookmark_years_months bym ", (rs, i) -> new
-					// YearMonth(rs.getInt("year"), rs.getInt("month")));
-					// var model = new ConcurrentHashMap<Integer, Map<Integer,
-					// Collection<String>>>();
-					// yearsAndMonths.forEach(ym -> {
-					// var m = ym.getMonth();
-					// var y = ym.getYear();
-					// model.putIfAbsent(y, new HashMap<>());
-					// model.get(y).put(m, new ArrayList<>());
-
-					// now load all the days for the year y and month m
-
-					// });
 					return RepeatStatus.FINISHED;
-				}).build();
+				})//
+				.build();
 	}
 
 }
