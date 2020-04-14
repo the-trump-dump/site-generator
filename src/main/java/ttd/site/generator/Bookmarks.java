@@ -14,7 +14,7 @@ class Bookmarks {
 
 	private final List<Bookmark> bookmarks;
 
-	public Bookmarks(YearMonth yearMonth, List<Bookmark> bookmarks) {
+	Bookmarks(YearMonth yearMonth, List<Bookmark> bookmarks) {
 		this.yearMonth = yearMonth;
 		bookmarks.sort(comparator);
 		this.bookmarks = bookmarks;

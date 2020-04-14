@@ -38,8 +38,6 @@ class Step5Configuration {
 
 	private final DataSource dataSource;
 
-	private final BookmarkDbService bookmarkDbService;
-
 	private final TemplateService templateService;
 
 	@Bean(STEP_NAME + "Reader")
@@ -55,7 +53,7 @@ class Step5Configuration {
 	@Bean(STEP_NAME + "Processor")
 	ItemProcessor<YearMonth, Bookmarks> processor() {
 		return ym -> {
-			var bookmarkList = this.bookmarkDbService.template.query(
+			var bookmarkList =  template.query(
 					"select * from bookmark b where date_part('month', time) = ? and date_part('year', time) = ? ",
 					new Object[] { ym.getMonth(), ym.getYear() }, new BookmarkRowMapper());
 			return new Bookmarks(ym, bookmarkList);
