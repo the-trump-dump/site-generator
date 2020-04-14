@@ -3,6 +3,7 @@ package ttd.site.generator;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
@@ -14,7 +15,6 @@ import org.springframework.util.Assert;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.nio.charset.Charset;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -59,49 +59,31 @@ class MustacheTemplateService implements TemplateService {
 	}
 
 	@Data
-	// @RequiredArgsConstructor
 	@Log4j2
+	@RequiredArgsConstructor
 	static class KeyAndLinks {
-
-		KeyAndLinks(String key, List<Link> links) {
-			this.key = key;
-			this.links = links;
-		}
 
 		private final String key;
 
-		private final List<Link> links;
+		private final List<Map<String, Object>> links;
 
+	}
+
+	private List<Map<String, Object>> linkMaps(List<Link> links) {
+		return links.stream().map(this::buildMapForLink).collect(Collectors.toList());
 	}
 
 	@Override
 	public String monthly(YearMonth yearMonth, Map<String, List<Link>> links) {
-		var listOfKeyAndLinks = links.entrySet().stream()
-				.map(entry -> new KeyAndLinks(entry.getKey(), entry.getValue()))
-				.sorted(Comparator.comparing(KeyAndLinks::getKey)).collect(Collectors.toList());
+
+		var listOfKeyAndLinks = links.entrySet().stream()//
+				.map(entry -> new KeyAndLinks(entry.getKey(), linkMaps(entry.getValue())))//
+				.sorted(Comparator.comparing(KeyAndLinks::getKey))//
+				.collect(Collectors.toList());
 		var map = new HashMap<String, Object>();
 		map.put("yearAndMonth", yearMonth);
 		map.put("dates", listOfKeyAndLinks);
 		return this.monthly.execute(map);
-	}
-
-	@Override
-	public String index(Collection<Link> links) {
-		Map<String, Object> context = buildDefaultContextFor(links);
-		return this.index.execute(context);
-	}
-
-	@Override
-	public String daily(Date date, Collection<Link> links) {
-		Map<String, Object> context = buildDefaultContextFor(links);
-		context.put("date", dailyDate(date));
-		return this.daily.execute(context);
-	}
-
-	private Template createTemplate(Resource resource) throws IOException {
-		try (Reader reader = new InputStreamReader(resource.getInputStream(), this.charset)) {
-			return this.compiler.compile(reader);
-		}
 	}
 
 	private Map<String, Object> buildMapForLink(Link lien) {
@@ -130,6 +112,25 @@ class MustacheTemplateService implements TemplateService {
 
 		linkMapForRendering.put("html", html);
 		return linkMapForRendering;
+	}
+
+	@Override
+	public String index(Collection<Link> links) {
+		Map<String, Object> context = buildDefaultContextFor(links);
+		return this.index.execute(context);
+	}
+
+	@Override
+	public String daily(Date date, Collection<Link> links) {
+		var context = this.buildDefaultContextFor(links);
+		context.put("date", dailyDate(date));
+		return this.daily.execute(context);
+	}
+
+	private Template createTemplate(Resource resource) throws IOException {
+		try (var reader = new InputStreamReader(resource.getInputStream(), this.charset)) {
+			return this.compiler.compile(reader);
+		}
 	}
 
 	private String markdownToHtml(String input) {

@@ -1,19 +1,23 @@
 <html>
-<head><title> The Daily Trump Dump - {{yearAndMonth}}</title></head>
+<head><title> The Daily Trump Dump - {{yearAndMonth.year}}-{{ yearAndMonth.month }}
+</title></head>
 <body>
-<h1> {{ yearAndMonth  }}</h1>
-{{#dates}}
-    <div>
-        <div> date : {{ key }}</div>
-        <OL>
-            {{#links}}
-                <LI>
-                    {{href}}
-                </LI>
-            {{/links}}
-        </OL>
-    </div>
-{{/dates}}
-
+<div class="monthly">
+    <h1>
+        {{yearAndMonth.year}}-[{ yearAndMonth.month }}
+    </h1>
+    {{#dates}}
+        <div>
+            <div class="date">  {{ key }}</div>
+            <UL>
+                {{#links}}
+                    <LI>
+                        {{{ html }}}
+                    </LI>
+                {{/links}}
+            </UL>
+        </div>
+    {{/dates}}
+</div>
 </body>
 </html>
