@@ -1,7 +1,6 @@
 package ttd.site.generator;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.util.ReflectionUtils;
@@ -10,9 +9,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,7 +26,7 @@ class BlogItemWriter implements ItemWriter<Map<String, Collection<Bookmark>>> {
 	private final SiteGeneratorConfigurationProperties properties;
 
 	private void writeBlog(String publishKey, Collection<Bookmark> bookmarks) {
-		var date = fromPublishKey(publishKey);
+		var date = DateUtils.parseYearMonthDay(publishKey);
 		var pk = publishKey.trim();
 		var file = new File(this.properties.getContentDirectory(), pk + ".html");
 		var links = bookmarks.stream()
@@ -41,11 +38,6 @@ class BlogItemWriter implements ItemWriter<Map<String, Collection<Bookmark>>> {
 		catch (IOException e) {
 			ReflectionUtils.rethrowRuntimeException(e);
 		}
-	}
-
-	@SneakyThrows
-	private Date fromPublishKey(String pk) {
-		return new SimpleDateFormat("yyyy-MM-dd").parse(pk);
 	}
 
 	@Override

@@ -16,8 +16,6 @@ import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -40,9 +38,6 @@ class MustacheTemplateService implements TemplateService {
 	private final PropertyDescriptor[] propertyDescriptors = BeanUtils.getPropertyDescriptors(Link.class);
 
 	private final Parser parser = Parser.builder().build();
-
-	private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE.withLocale(Locale.US)
-			.withZone(ZoneId.of(ZoneId.SHORT_IDS.get("PST")));
 
 	MustacheTemplateService(Mustache.Compiler compiler, Resource daily, Resource index, Resource monthly,
 			Charset charset) throws Exception {
@@ -123,7 +118,7 @@ class MustacheTemplateService implements TemplateService {
 	@Override
 	public String daily(Date date, Collection<Link> links) {
 		var context = this.buildDefaultContextFor(links);
-		context.put("date", dailyDate(date));
+		context.put("date", /* this.formatter.format(date.toInstant()) */ DateUtils.formatYearMonthDay(date));
 		return this.daily.execute(context);
 	}
 
@@ -177,10 +172,6 @@ class MustacheTemplateService implements TemplateService {
 		Map<String, Object> ctx = new HashMap<>();
 		ctx.put("links", links.stream().map(this::buildMapForLink).collect(Collectors.toList()));
 		return ctx;
-	}
-
-	private String dailyDate(Date date) {
-		return this.formatter.format(date.toInstant());
 	}
 
 }

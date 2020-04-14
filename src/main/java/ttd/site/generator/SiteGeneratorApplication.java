@@ -1,12 +1,9 @@
 package ttd.site.generator;
 
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.util.FileSystemUtils;
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>

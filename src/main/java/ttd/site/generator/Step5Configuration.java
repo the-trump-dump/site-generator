@@ -20,8 +20,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
 
 @Log4j2
@@ -96,27 +98,23 @@ class Step5Configuration {
 		return new Bookmarks(ym, bookmarkList);
 	}
 
-	private String dateKey(Date date) {
-		return new SimpleDateFormat("yyyy-MM-dd").format(date);
-	}
-
 	private void writeYearAndMonthBlog(YearMonth ym, List<Bookmark> bookmarks) {
 		var yearMonthKey = yearMonthKey(ym);
 		log.debug("writing " + yearMonthKey + " with " + bookmarks.size() + " articles");
 		var bookmarksByDate = new HashMap<String, List<Link>>();
 		var stringListFunction = new Function<String, List<Link>>() {
+
 			@Override
 			public List<Link> apply(String s) {
 				return new ArrayList<>();
 			}
 		};
 		bookmarks.forEach(bm -> {
-			var key = dateKey(bm.getTime());
-			var lien = new Link(Long.toString(bm.getBookmarkId()), bm.getHref(), bm.getDescription(), bm.getTime());
-			bookmarksByDate.computeIfAbsent(key, stringListFunction).add(lien);
+			var key = DateUtils.formatYearMonthDay(bm.getTime());
+			var link = new Link(Long.toString(bm.getBookmarkId()), bm.getHref(), bm.getDescription(), bm.getTime());
+			bookmarksByDate.computeIfAbsent(key, stringListFunction).add(link);
 		});
 		var file = new File(this.properties.getContentDirectory(), yearMonthKey + ".html");
-		log.debug("there are " + bookmarksByDate.keySet().size() + " keys for " + yearMonthKey);
 		var monthlyHtml = templateService.monthly(ym, bookmarksByDate);
 		try (var bw = new BufferedWriter(new FileWriter(file))) {
 			bw.write(monthlyHtml);
