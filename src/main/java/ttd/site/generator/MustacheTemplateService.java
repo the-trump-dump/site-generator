@@ -132,7 +132,6 @@ class MustacheTemplateService implements TemplateService {
 						<H1> %s </H1>
 						<DIV> %s </DIV>
 				</div>
-
 					""".strip();
 		Stream<String> stringStream = months.stream().map(ym -> String.format("""
 				<a href="%s.html">%s</a>
