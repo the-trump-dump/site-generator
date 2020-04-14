@@ -99,7 +99,7 @@ class Step5Configuration {
 	}
 
 	private void writeYearAndMonthBlog(YearMonth ym, List<Bookmark> bookmarks) {
-		var yearMonthKey = yearMonthKey(ym);
+		var yearMonthKey = (ym).toString();
 		log.debug("writing " + yearMonthKey + " with " + bookmarks.size() + " articles");
 		var bookmarksByDate = new HashMap<String, List<Link>>();
 		var stringListFunction = new Function<String, List<Link>>() {
@@ -122,29 +122,6 @@ class Step5Configuration {
 		catch (IOException e) {
 			ReflectionUtils.rethrowRuntimeException(e);
 		}
-	}
-
-	private static String lpad(String theText, int numberOfCharsDesiredTotal, String characterToUseAsPadding) {
-		Assert.hasText(theText, "the text to pad must be non-null");
-		if (theText.length() < numberOfCharsDesiredTotal) {
-			var delta = numberOfCharsDesiredTotal - theText.length();
-			return characterToUseAsPadding.repeat(delta) + theText;
-		}
-		else {
-			return theText;
-		}
-	}
-
-	private static String yearMonthKey(YearMonth ym) {
-		var y = ym.getYear();
-		var m = ym.getMonth();
-		var stringBuilder = new StringBuilder();
-		var yearAsString = Integer.toString(y);
-		var monthAsString = Integer.toString(m);
-		stringBuilder.append(y < 10 ? lpad(yearAsString, 2, "0") : yearAsString);
-		stringBuilder.append('-');
-		stringBuilder.append(m < 10 ? lpad(monthAsString, 2, "0") : monthAsString);
-		return stringBuilder.toString();
 	}
 
 }
