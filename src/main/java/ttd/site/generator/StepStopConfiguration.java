@@ -15,7 +15,6 @@ import java.nio.file.Files;
 import java.time.Instant;
 
 /**
- *
  * This step takes everything in the working directory, commits it, and then pushes it.
  *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>

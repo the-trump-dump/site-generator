@@ -20,6 +20,9 @@ class TemplateServiceConfigurationProperties {
 	@Value("classpath:/templates/monthly.mustache")
 	private Resource monthly;
 
+	@Value("classpath:/templates/_frame.mustache")
+	private Resource frame;
+
 	private Charset charset = Charset.defaultCharset();
 
 }

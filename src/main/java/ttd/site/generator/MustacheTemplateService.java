@@ -33,14 +33,14 @@ class MustacheTemplateService implements TemplateService {
 
 	private final Mustache.Compiler compiler;
 
-	private final Template daily, monthly, index;
+	private final Template daily, monthly, index, _frame;
 
 	private final PropertyDescriptor[] propertyDescriptors = BeanUtils.getPropertyDescriptors(Link.class);
 
 	private final Parser parser = Parser.builder().build();
 
 	MustacheTemplateService(Mustache.Compiler compiler, Resource daily, Resource index, Resource monthly,
-			Charset charset) throws Exception {
+			Resource frame, Charset charset) throws Exception {
 		Assert.notNull(compiler, "the compiler must not be null");
 		Assert.notNull(charset, "the charset must not be null");
 		Assert.notNull(daily, "the daily template must not be null");
@@ -51,6 +51,7 @@ class MustacheTemplateService implements TemplateService {
 		this.daily = createTemplate(daily);
 		this.index = createTemplate(index);
 		this.monthly = createTemplate(monthly);
+		this._frame = createTemplate(frame);
 	}
 
 	@Data
@@ -68,6 +69,12 @@ class MustacheTemplateService implements TemplateService {
 		return links.stream().map(this::buildMapForLink).collect(Collectors.toList());
 	}
 
+	private String frame(String body) {
+		Map<String, Object> context = new HashMap<>();
+		context.put("body", body);
+		return this._frame.execute(context);
+	}
+
 	@Override
 	public String monthly(YearMonth yearMonth, Map<String, List<Link>> links) {
 
@@ -78,7 +85,7 @@ class MustacheTemplateService implements TemplateService {
 		var map = new HashMap<String, Object>();
 		map.put("yearAndMonth", yearMonth);
 		map.put("dates", listOfKeyAndLinks);
-		return this.monthly.execute(map);
+		return this.frame(this.monthly.execute(map));
 	}
 
 	private Map<String, Object> buildMapForLink(Link lien) {
@@ -112,14 +119,14 @@ class MustacheTemplateService implements TemplateService {
 	@Override
 	public String index(Collection<Link> links) {
 		Map<String, Object> context = buildDefaultContextFor(links);
-		return this.index.execute(context);
+		return this.frame(this.index.execute(context));
 	}
 
 	@Override
 	public String daily(Date date, Collection<Link> links) {
 		var context = this.buildDefaultContextFor(links);
-		context.put("date", /* this.formatter.format(date.toInstant()) */ DateUtils.formatYearMonthDay(date));
-		return this.daily.execute(context);
+		context.put("date", DateUtils.formatYearMonthDay(date));
+		return this.frame(this.daily.execute(context));
 	}
 
 	private Template createTemplate(Resource resource) throws IOException {

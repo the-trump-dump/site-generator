@@ -50,7 +50,6 @@ class JobConfiguration {
 				.next(s2.step())//
 				.next(s3.step())//
 				.next(s4.step())//
-				.next(s4.step())//
 				.next(s5.step())//
 				.next(ss.step())//
 				.incrementer(new RunIdIncrementer())//

@@ -12,7 +12,6 @@ import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuild
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import javax.sql.DataSource;
