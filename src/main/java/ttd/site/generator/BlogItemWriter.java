@@ -1,6 +1,8 @@
 package ttd.site.generator;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -9,18 +11,17 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
-import java.util.*;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
+@Log4j2
 @RequiredArgsConstructor
 class BlogItemWriter implements ItemWriter<Map<String, Collection<Bookmark>>> {
 
@@ -28,13 +29,9 @@ class BlogItemWriter implements ItemWriter<Map<String, Collection<Bookmark>>> {
 
 	private final SiteGeneratorConfigurationProperties siteGeneratorConfigurationProperties;
 
+	@SneakyThrows
 	private Date fromPublishKey(String pk) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		TemporalAccessor temporalAccessor = formatter.parse(pk);
-		LocalDateTime localDateTime = LocalDateTime.from(temporalAccessor);
-		ZonedDateTime zonedDateTime = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
-		Instant result = Instant.from(zonedDateTime);
-		return new Date(result.toEpochMilli());
+		return new SimpleDateFormat("yyyy-MM-dd").parse(pk);
 	}
 
 	private String uniquePublishKey(String pk, Bookmark bookmark) {
@@ -44,13 +41,12 @@ class BlogItemWriter implements ItemWriter<Map<String, Collection<Bookmark>>> {
 	}
 
 	private void writeBlog(String publishKey, Collection<Bookmark> bookmarks) {
-		Date date = fromPublishKey(publishKey);
-		String pk = publishKey.split(" ")[0].trim();
-		File file = new File(this.siteGeneratorConfigurationProperties.getContentDirectory(), pk + ".html");
-		Set<Link> links = bookmarks.stream()
+		var date = fromPublishKey(publishKey);
+		var pk = publishKey.trim();
+		var file = new File(this.siteGeneratorConfigurationProperties.getContentDirectory(), pk + ".html");
+		var links = bookmarks.stream()
 				.map(bm -> new Link(uniquePublishKey(publishKey, bm), bm.getHref(), bm.getDescription(), bm.getTime()))
 				.collect(Collectors.toSet());
-
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
 			bw.write(this.templateService.daily(date, links));
 		}

@@ -14,7 +14,7 @@ class TemplateServiceAutoConfiguration {
 
 	@Bean
 	TemplateService templateService(Mustache.Compiler c, TemplateServiceConfigurationProperties tc) throws Exception {
-		return new MustacheTemplateService(c, tc.getDaily(), tc.getIndex(), tc.getCharset());
+		return new MustacheTemplateService(c, tc.getDaily(), tc.getIndex(), tc.getMonthly(), tc.getCharset());
 	}
 
 }

@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 public class MustacheTemplateServiceTest {
 
 	@Autowired
-	private TemplateService ts;
+	private MustacheTemplateService ts;
 
 	private Log log = LogFactory.getLog(getClass());
 
@@ -45,7 +45,7 @@ public class MustacheTemplateServiceTest {
 		String content = " <a class=\"link\" href=\"_URL_\" name =\"_ID_\" id=\"_ID_\">_DESC_</a>";
 		String find = "_DESC_";
 		String replace = "Treasury probing $25K Mnuchin flight from New York to DC | TheHill";
-		String replaced = ((MustacheTemplateService) ts).replace(content, find, replace);
+		String replaced = ts.replace(content, find, replace);
 		Assert.assertEquals(replaced,
 				" <a class=\"link\" href=\"_URL_\" name =\"_ID_\" id=\"_ID_\">Treasury probing $25K Mnuchin flight from New York to DC | TheHill</a>");
 	}

@@ -2,6 +2,8 @@ package ttd.site.generator;
 
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
+import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
@@ -33,7 +35,7 @@ class MustacheTemplateService implements TemplateService {
 
 	private final Mustache.Compiler compiler;
 
-	private final Template daily, index;
+	private final Template daily, monthly, index;
 
 	private final PropertyDescriptor[] propertyDescriptors = BeanUtils.getPropertyDescriptors(Link.class);
 
@@ -42,8 +44,8 @@ class MustacheTemplateService implements TemplateService {
 	private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE.withLocale(Locale.US)
 			.withZone(ZoneId.of(ZoneId.SHORT_IDS.get("PST")));
 
-	MustacheTemplateService(Mustache.Compiler compiler, Resource daily, Resource index, Charset charset)
-			throws Exception {
+	MustacheTemplateService(Mustache.Compiler compiler, Resource daily, Resource index, Resource monthly,
+			Charset charset) throws Exception {
 		Assert.notNull(compiler, "the compiler must not be null");
 		Assert.notNull(charset, "the charset must not be null");
 		Assert.notNull(daily, "the daily template must not be null");
@@ -53,6 +55,34 @@ class MustacheTemplateService implements TemplateService {
 		this.charset = charset.name();
 		this.daily = createTemplate(daily);
 		this.index = createTemplate(index);
+		this.monthly = createTemplate(monthly);
+	}
+
+	@Data
+	// @RequiredArgsConstructor
+	@Log4j2
+	static class KeyAndLinks {
+
+		KeyAndLinks(String key, List<Link> links) {
+			this.key = key;
+			this.links = links;
+		}
+
+		private final String key;
+
+		private final List<Link> links;
+
+	}
+
+	@Override
+	public String monthly(YearMonth yearMonth, Map<String, List<Link>> links) {
+		var listOfKeyAndLinks = links.entrySet().stream()
+				.map(entry -> new KeyAndLinks(entry.getKey(), entry.getValue()))
+				.sorted(Comparator.comparing(KeyAndLinks::getKey)).collect(Collectors.toList());
+		var map = new HashMap<String, Object>();
+		map.put("yearAndMonth", yearMonth);
+		map.put("dates", listOfKeyAndLinks);
+		return this.monthly.execute(map);
 	}
 
 	@Override
@@ -89,8 +119,7 @@ class MustacheTemplateService implements TemplateService {
 		// setup html attribute
 		String inputDescription = lien.getDescription();
 		String url = lien.getHref();
-		String template = "[_DESC_](_URL_)"; // "<a class=\"link\" href=\"_URL_\" name
-												// =\"_ID_\" id=\"_ID_\">_DESC_</a>";
+		String template = "[_DESC_](_URL_)";
 		String publishKey = lien.getPublishKey();
 
 		if (this.shouldProcessDescription(inputDescription)) {

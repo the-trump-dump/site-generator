@@ -17,6 +17,9 @@ class TemplateServiceConfigurationProperties {
 	@Value("classpath:/templates/index.mustache")
 	private Resource index;
 
+	@Value("classpath:/templates/monthly.mustache")
+	private Resource monthly;
+
 	private Charset charset = Charset.defaultCharset();
 
 }

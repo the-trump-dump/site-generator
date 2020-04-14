@@ -1,0 +1,19 @@
+<html>
+<head><title> The Daily Trump Dump - {{yearAndMonth}}</title></head>
+<body>
+<h1> {{ yearAndMonth  }}</h1>
+{{#dates}}
+    <div>
+        <div> date : {{ key }}</div>
+        <OL>
+            {{#links}}
+                <LI>
+                    {{href}}
+                </LI>
+            {{/links}}
+        </OL>
+    </div>
+{{/dates}}
+
+</body>
+</html>

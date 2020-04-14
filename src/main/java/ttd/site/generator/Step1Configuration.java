@@ -26,9 +26,13 @@ class Step1Configuration {
 
 	@Bean(STEP_NAME)
 	public Step step() {
-		return this.stepBuilderFactory.get(STEP_NAME) //
+
+		var sql = " update bookmark set publish_key = concat( date_part('year', time) || '-' || lpad ('' || date_part('month', time) , 2, '0' )  || '-'|| lpad(  ''||date_part( 'day' , time)  , 2  ,'0') || '')  ";
+
+		return this.stepBuilderFactory //
+				.get(STEP_NAME) //
 				.tasklet((stepContribution, chunkContext) -> { //
-					jdbcTemplate.update(" update bookmark set publish_key = concat( date_trunc( 'day' , time) || '') ");
+					jdbcTemplate.update(sql);
 					return RepeatStatus.FINISHED;
 				})//
 				.build();
