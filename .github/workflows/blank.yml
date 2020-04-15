@@ -39,4 +39,4 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Run with Maven
-        run: ./mvnw spring-boot:run
+        run: ./mvnw clean package && java --enable-preview -jar target/site-generator-0.0.1-SNAPSHOT.jar
