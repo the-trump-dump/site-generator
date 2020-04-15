@@ -37,7 +37,7 @@ class StepStopConfiguration {
 				.get(STEP_NAME) //
 				.tasklet((stepContribution, chunkContext) -> { //
 					this.gitTemplate.executeAndPush(git -> {
-						File directory = properties.getContentDirectory();
+						var directory = properties.getContentDirectory();
 						Files.walk(directory.toPath()).forEach(file -> {
 							try {
 								git.add().addFilepattern(file.toFile().getName()).call();

@@ -5,7 +5,6 @@ import com.samskivert.mustache.Template;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.springframework.beans.BeanUtils;
@@ -16,6 +15,7 @@ import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -75,6 +75,7 @@ class MustacheTemplateService implements TemplateService {
 	private String frame(String body) {
 		Map<String, Object> context = new HashMap<>();
 		context.put("body", body);
+		context.put("built", Instant.now().toString());
 		return this._frame.execute(context);
 	}
 
@@ -102,7 +103,6 @@ class MustacheTemplateService implements TemplateService {
 				"there must be at least one element in the " + YearMonth.class.getName() + " collection.");
 
 		var latest = yearAndMonths.get(0);
-		var file = latest.toString() + ".html";
 
 		var yearToMonths = new HashMap<String, List<YearMonth>>();
 		yearAndMonths.forEach(ym -> yearToMonths.computeIfAbsent(ym.getYear() + "", key -> new ArrayList<>()).add(ym));
@@ -111,7 +111,7 @@ class MustacheTemplateService implements TemplateService {
 		sortedYears.sort(Comparator.naturalOrder());
 
 		var htmlForEachYear = sortedYears // the goal here is to build up the HTML for
-											// each year for the index
+				// each year for the index
 				.stream().map(year -> {
 					var months = yearToMonths.get(year);
 					months.sort(YearMonth::compareTo);
@@ -125,24 +125,26 @@ class MustacheTemplateService implements TemplateService {
 	}
 
 	private String renderYearFragmentGiven(String year, List<YearMonth> months) {
-		// todo render the months
+		// todo render the months as Months!
 		// todo this should be moved into a mustache template
-		String format = """
+		var bodyFormat = """
 				 <div>
 						<H1> %s </H1>
 						<DIV> %s </DIV>
 				</div>
 					""".strip();
-		Stream<String> stringStream = months.stream().map(ym -> String.format("""
+		var linkFormat = """
 				<a href="%s.html">%s</a>
-				""", ym.toString(), ym.toString()));
-		return String.format(format, year, stringStream.collect(Collectors.joining()));
+				""";
+		var html = months.stream().map(ym -> String.format(linkFormat, ym.toString(), ym.toString()))
+				.collect(Collectors.joining());
+		return String.format(bodyFormat, year, html);
 	}
 
 	private Map<String, Object> buildMapForLink(Link lien) {
-		Map<String, Object> linkMapForRendering = new HashMap<>();
+		var linkMapForRendering = new HashMap<String, Object>();
 		// copy over attributes for javabean properties on the `Link` class.
-		for (PropertyDescriptor pd : this.propertyDescriptors) {
+		for (var pd : this.propertyDescriptors) {
 			try {
 				linkMapForRendering.put(pd.getName(), pd.getReadMethod().invoke(lien));
 			}
@@ -152,16 +154,16 @@ class MustacheTemplateService implements TemplateService {
 		}
 
 		// setup html attribute
-		String inputDescription = lien.getDescription();
-		String url = lien.getHref();
-		String template = "[_DESC_](_URL_)";
-		String publishKey = lien.getPublishKey();
+		var inputDescription = lien.getDescription();
+		var url = lien.getHref();
+		var template = "[_DESC_](_URL_)";
+		var publishKey = lien.getPublishKey();
 
 		if (this.shouldProcessDescription(inputDescription)) {
 			template = inputDescription;
 		}
 
-		String html = this.buildHtml(template, url, publishKey, inputDescription);
+		var html = this.buildHtml(template, url, publishKey, inputDescription);
 
 		linkMapForRendering.put("html", html);
 		return linkMapForRendering;
@@ -171,6 +173,7 @@ class MustacheTemplateService implements TemplateService {
 	public String daily(Date date, Collection<Link> links) {
 		var context = this.buildDefaultContextFor(links);
 		context.put("date", DateUtils.formatYearMonthDay(date));
+
 		return this.frame(this.daily.execute(context));
 	}
 
@@ -182,20 +185,24 @@ class MustacheTemplateService implements TemplateService {
 
 	private String markdownToHtml(String input) {
 		synchronized (this.parser) {
-			Node document = parser.parse(input);
-			HtmlRenderer renderer = HtmlRenderer.builder().build();
+			var document = parser.parse(input);
+			var renderer = HtmlRenderer.builder().build();
 			return renderer.render(document);
 		}
 	}
 
 	private boolean shouldProcessDescription(String inputDescription) {
-		String description = inputDescription + "";
-		return Stream.of(URL_MARKER, ID_MARKER, DESC_MARKER).map(description::contains).filter(a -> a).findFirst()
+		var description = inputDescription + "";
+		return Stream//
+				.of(URL_MARKER, ID_MARKER, DESC_MARKER) //
+				.map(description::contains)//
+				.filter(a -> a)//
+				.findFirst()//
 				.orElse(false);
 	}
 
 	/* for testing */ String replace(String in, String find, String replace) {
-		int start;
+		var start = 0;
 		while ((start = in.indexOf(find)) != -1) {
 			String before = in.substring(0, start);
 			String after = in.substring(start + find.length());
@@ -205,14 +212,15 @@ class MustacheTemplateService implements TemplateService {
 	}
 
 	private String buildHtml(String template, String href, String pk, String desc) {
-		Map<String, String> replacements = new HashMap<>();
-		replacements.put(URL_MARKER, href);
-		replacements.put(ID_MARKER, pk);
-		replacements.put(DESC_MARKER, desc);
-		AtomicReference<String> ar = new AtomicReference<>();
-		ar.set(template);
-		replacements.forEach((k, v) -> ar.set(replace(ar.get(), k, v)));
-		String html = markdownToHtml(ar.get()).trim();
+
+		var replacements = Map.of(URL_MARKER, href, ID_MARKER, pk, DESC_MARKER, desc);
+
+		var atomicReference = new AtomicReference<String>();
+		atomicReference.set(template);
+
+		replacements.forEach((k, v) -> atomicReference.set(replace(atomicReference.get(), k, v)));
+
+		var html = markdownToHtml(atomicReference.get()).trim();
 		if (html.startsWith("<p>") && html.endsWith("</p>")) {
 			html = html.substring("<p>".length());
 			html = html.substring(0, html.lastIndexOf("</p>"));
@@ -221,7 +229,7 @@ class MustacheTemplateService implements TemplateService {
 	}
 
 	private Map<String, Object> buildDefaultContextFor(Collection<Link> links) {
-		Map<String, Object> ctx = new HashMap<>();
+		var ctx = new HashMap<String, Object>();
 		ctx.put("links", links.stream().map(this::buildMapForLink).collect(Collectors.toList()));
 		return ctx;
 	}

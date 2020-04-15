@@ -6,7 +6,7 @@ import org.springframework.util.Assert;
 
 @Data
 @RequiredArgsConstructor
-class YearMonth implements Comparable {
+class YearMonth implements Comparable<YearMonth> {
 
 	private final int year, month;
 
@@ -39,7 +39,7 @@ class YearMonth implements Comparable {
 	}
 
 	@Override
-	public int compareTo(Object o) {
+	public int compareTo(YearMonth o) {
 		if (o instanceof YearMonth ym) {
 			return ym.toString().compareTo(toString());
 		}
