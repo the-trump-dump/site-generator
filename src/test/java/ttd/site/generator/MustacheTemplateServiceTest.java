@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-@ImportAutoConfiguration({ MustacheAutoConfiguration.class, TemplateServiceAutoConfiguration.class })
+@ImportAutoConfiguration({ MustacheAutoConfiguration.class  })
 @OverrideAutoConfiguration(enabled = false)
 @RunWith(SpringRunner.class)
 public class MustacheTemplateServiceTest {
@@ -45,7 +45,7 @@ public class MustacheTemplateServiceTest {
 		String content = " <a class=\"link\" href=\"_URL_\" name =\"_ID_\" id=\"_ID_\">_DESC_</a>";
 		String find = "_DESC_";
 		String replace = "Treasury probing $25K Mnuchin flight from New York to DC | TheHill";
-		String replaced = ts.replace(content, find, replace);
+		String replaced = ts.replaceString(content, find, replace);
 		Assert.assertEquals(replaced,
 				" <a class=\"link\" href=\"_URL_\" name =\"_ID_\" id=\"_ID_\">Treasury probing $25K Mnuchin flight from New York to DC | TheHill</a>");
 	}
