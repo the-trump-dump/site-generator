@@ -62,7 +62,7 @@ public class MustacheTemplateServiceTest {
 	public void index() {
 		List<Link> results = generateLinks(5);
 		results.add(customLink);
-		String index = this.ts.index(List.of(new YearMonth(10, 10)));
+		String index = this.ts.index( (new YearMonth(10, 10)));
 		Assert.assertNotNull(index);
 		log.info(index);
 	}

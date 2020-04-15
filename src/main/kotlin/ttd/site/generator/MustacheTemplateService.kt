@@ -16,14 +16,15 @@ import java.util.stream.Collectors
 import kotlin.Comparator
 
 
-class MustacheTemplateService(
-
+open class MustacheTemplateService(
+		private val fileNameResolver: (String) -> String,
 		private val compiler: Mustache.Compiler,
 		daily: Resource,
 		index: Resource,
 		monthly: Resource,
 		frame: Resource,
 		list: Resource,
+		years: Resource,
 		charset: Charset
 ) :
 		TemplateService {
@@ -37,6 +38,7 @@ class MustacheTemplateService(
 	private val monthly = createTemplate(monthly)
 	private val _list = createTemplate(list)
 	private val _frame = createTemplate(frame)
+	private val _years = createTemplate(years)
 
 	companion object {
 		const val URL_MARKER = "_URL_"
@@ -61,20 +63,35 @@ class MustacheTemplateService(
 		return this.frame(this.monthly.execute(map))
 	}
 
+	override fun monthlyWithoutFrame(yearMonth: YearMonth, links: Map<String, List<Link>>): String {
+		val listOfKeyAndLinks =
+				links
+						.map { KeyAndLinks(it.key, linkMaps(it.value)) }
+						.sortedWith(Comparator { o1, o2 -> o1.key.compareTo(o2.key) })
+		val map = mapOf("yearAndMonth" to yearMonth, "dates" to listOfKeyAndLinks)
+		return this.monthly.execute(map)
+	}
+
 	override fun daily(date: Date, links: Collection<Link>): String {
 		val context = this.buildDefaultContextFor(links)
 		context["date"] = DateUtils.formatYearMonthDay(date)
 		return this.frame(this.daily.execute(context))
 	}
 
+
 	/**
 	 * this renders a page that has the years and the months, as well as the latest month's worth of content.
 	 */
-	override fun index(yearAndMonths: List<YearMonth>): String {
+	override fun index(latest: YearMonth): String {
 
+		val index = index.execute(mutableMapOf(
+				"latest_date" to latest.toString(),
+				"latest" to this.fileNameResolver("${latest}-latest.html")))
+		return frame(index)
+	}
+
+	override fun years(yearAndMonths: List<YearMonth>): String {
 		Assert.isTrue(yearAndMonths.isNotEmpty(), "there must be at least one element in the " + YearMonth::class.java.name + " collection.")
-
-		val latest = yearAndMonths[0]
 
 		val yearToMonths = mutableMapOf<String, MutableList<YearMonth>>()
 		yearAndMonths.forEach { yearToMonths.computeIfAbsent(it.year.toString() + "") { mutableListOf() }.add(it) }
@@ -83,17 +100,20 @@ class MustacheTemplateService(
 		sortedYears.sortWith(Comparator.naturalOrder())
 
 		val htmlForEachYear = sortedYears
+				.reversed()
 				.map {
 					val months = yearToMonths[it]!!
 					months.sortedWith(java.util.Comparator { obj: YearMonth, other: YearMonth -> obj.compareTo(other) })
 					renderYearFragmentGiven(it, months)
 				}
 
-		val index = index.execute(mutableMapOf("years" to htmlForEachYear, "latest" to latest.toString()))
-		return frame(index)
+		return this._years.execute(mapOf("years" to htmlForEachYear))
 	}
 
-	private fun frame(body: String) = this._frame.execute(mapOf("body" to body, "built" to Instant.now().toString()))
+
+	private fun frame(body: String) = this._frame.execute(mapOf("body" to body,
+			"years" to fileNameResolver("years.include"),
+			"built" to Instant.now().toString()))
 
 	private fun linkMaps(links: List<Link>): List<Map<String, Any>> {
 		return links.stream().map(this::buildMapForLink).collect(Collectors.toList())

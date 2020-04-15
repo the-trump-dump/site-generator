@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @EnableBatchProcessing
 class JobConfiguration(private val jobBuilderFactory: JobBuilderFactory,  //
+                       private val s0: Step0Configuration,  //
                        private val s1: Step1Configuration,  //
                        private val s2: Step2Configuration,  //
                        private val s3: Step3Configuration,  //
@@ -20,7 +21,8 @@ class JobConfiguration(private val jobBuilderFactory: JobBuilderFactory,  //
 	@Bean
 	fun job(): Job {
 		return jobBuilderFactory["blog-job"] //
-				.start(s1.step()) //
+				.start(s0.step()) //
+				.next(s1.step()) //
 				.next(s2.step()) //
 				.next(s3.step()) //
 				.next(s4.step()) //

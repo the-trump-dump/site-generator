@@ -23,5 +23,8 @@ data class TemplateServiceConfigurationProperties(
 		val frame: Resource,
 
 		@Value("classpath:/templates/_list-and-header.mustache")
-		val list: Resource
+		val list: Resource,
+
+		@Value("classpath:/templates/_years.mustache")
+		val years: Resource
 )

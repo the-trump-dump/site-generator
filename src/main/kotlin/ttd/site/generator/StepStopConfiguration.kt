@@ -35,14 +35,14 @@ class StepStopConfiguration(
 								ReflectionUtils.rethrowRuntimeException(e)
 							}
 						}
-						git.commit() //
-								.setAll(true) //
-								.setMessage("batch @ " + Instant.now().toString()) //
-								.setAllowEmpty(true) //
+						git.commit()
+								.setAll(true)
+								.setMessage("batch @ " + Instant.now().toString())
+								.setAllowEmpty(true)
 								.call()
 					}
 					RepeatStatus.FINISHED
-				} //
+				}
 				.build()
 	}
 

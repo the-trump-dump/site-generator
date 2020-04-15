@@ -13,11 +13,12 @@ import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 import java.sql.ResultSet
-import java.util.ArrayList
+import java.util.*
 import javax.sql.DataSource
 
 @Configuration
 class Step5Configuration(
+		private val siteGenerationJobState: SiteGenerationJobState,
 		private val properties: SiteGeneratorConfigurationProperties,
 		private val sbf: StepBuilderFactory,
 		private val template: JdbcTemplate,
@@ -70,9 +71,18 @@ class Step5Configuration(
 			val link = Link(bookmarkId.toString(), href, description, time)
 			bookmarksByDate.computeIfAbsent(key, stringListFunction).add(link)
 		}
-		val file = File(properties.contentDirectory, "$yearMonthKey.html")
-		val monthlyHtml = templateService.monthly(ym, bookmarksByDate)
-		BufferedWriter(FileWriter(file)).use { bw -> bw.write(monthlyHtml) }
+
+		write(File(properties.contentDirectory, "$yearMonthKey.html"), templateService.monthly(ym, bookmarksByDate))
+
+		if (ym.toString() == siteGenerationJobState.latestYearMonth.get().toString()) {
+			write(File(properties.contentDirectory, "${yearMonthKey}-latest.html"), templateService.monthlyWithoutFrame(ym, bookmarksByDate))
+		}
+
+
+	}
+
+	private fun write(file: File, text: String) {
+		BufferedWriter(FileWriter(file)).use { bw -> bw.write(text) }
 	}
 
 	companion object {
