@@ -77,8 +77,6 @@ class Step5Configuration(
 		if (ym.toString() == siteGenerationJobState.latestYearMonth.get().toString()) {
 			write(File(properties.contentDirectory, "${yearMonthKey}-latest.html"), templateService.monthlyWithoutFrame(ym, bookmarksByDate))
 		}
-
-
 	}
 
 	private fun write(file: File, text: String) {

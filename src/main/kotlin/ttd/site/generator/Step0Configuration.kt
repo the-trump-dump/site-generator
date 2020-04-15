@@ -34,7 +34,6 @@ class Step0Configuration(
 		return sbf //
 				.get(STEP_NAME) //
 				.tasklet { _: StepContribution, context: ChunkContext ->
-
 					val newSql =
 							"""
 							select distinct
@@ -50,23 +49,9 @@ class Step0Configuration(
 					BufferedWriter(FileWriter(file)).use {
 						it.write(html)
 					}
-
-
 					val yearMonth = yearAndMonths[0]
-
-					/*	context
-								.stepContext
-								.stepExecution
-								.jobExecution
-								.executionContext.put("latest", yearMonth)*/
-
-
 					siteGenerationJobState.latestYearMonth.set(yearMonth)
-
 					log.info("storing the latest ${YearMonth::class.qualifiedName} as $yearMonth")
-
-
-
 					RepeatStatus.FINISHED
 				} //
 				.build()

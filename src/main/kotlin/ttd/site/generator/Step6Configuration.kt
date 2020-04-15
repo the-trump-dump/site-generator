@@ -29,14 +29,8 @@ class Step6Configuration(
 				.get(STEP_NAME) //
 				.tasklet { _: StepContribution, _: ChunkContext ->
 
-					val latestYearMonth: YearMonth = state.latestYearMonth.get() //context
-					/*				.stepContext
-									.stepExecution
-									.jobExecution
-									.executionContext
-									.get("latest") as YearMonth*/
-
-					log.info("the latest is ${latestYearMonth} ")
+					val latestYearMonth: YearMonth = state.latestYearMonth.get()
+					log.info("the latest is $latestYearMonth ")
 
 					val indexHtml = templateService.index(latestYearMonth)
 					BufferedWriter(FileWriter(File(this.properties.contentDirectory, "index.html"))).use {

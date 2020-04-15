@@ -83,7 +83,6 @@ open class MustacheTemplateService(
 	 * this renders a page that has the years and the months, as well as the latest month's worth of content.
 	 */
 	override fun index(latest: YearMonth): String {
-
 		val index = index.execute(mutableMapOf(
 				"latest_date" to latest.toString(),
 				"latest" to this.fileNameResolver("${latest}-latest.html")))
@@ -143,7 +142,6 @@ open class MustacheTemplateService(
 		this.propertyDescriptors.forEach { pd ->
 			linkMapForRendering[pd.name] = pd.readMethod.invoke(lien)
 		}
-
 		val inputDescription = lien.description
 		val url = lien.href
 		var template = "[_DESC_](_URL_)"

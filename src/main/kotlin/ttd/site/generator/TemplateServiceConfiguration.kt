@@ -10,10 +10,7 @@ import java.io.FileReader
 @Configuration
 class TemplateServiceConfiguration {
 
-	private fun read(file: File): String =
-			BufferedReader(FileReader(file)).use {
-				it.readText()
-			}
+	private fun read(file: File): String = BufferedReader(FileReader(file)).use { it.readText() }
 
 	@Bean
 	fun templateService(compiler: Mustache.Compiler,
