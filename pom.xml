@@ -12,11 +12,10 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.3.0.M4</version>
-
-        <!--        <version>2.2.6.RELEASE</version>-->
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
     <properties>
+
         <java.version>14</java.version>
         <spring-cloud.version>Hoxton.SR3</spring-cloud.version>
     </properties>
@@ -104,12 +103,20 @@
                 <version>${maven-compiler-plugin.version}</version>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <release>14</release>
-                    <compilerArgs>
-                        <arg>--enable-preview</arg>
-                    </compilerArgs>
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
-                    <parameters>true</parameters>
+<!--                    <release>${java.version}</release>-->
+                    <!--<source>${java.version}</source>
+                    <target>${java.version}</target>-->
+                   <!-- <compilerArgs>
+                        <arg>&#45;&#45;enable-preview</arg>
+                    </compilerArgs>-->
+
+                    <source>14</source>
+                    <target>14</target>
+<!--                    <release>14</release> &lt;!&ndash; <release>13/14/15</release> &ndash;&gt;-->
+                    <compilerArgs>--enable-preview</compilerArgs>
+
+                    <!--<forceJavacCompilerUse>true</forceJavacCompilerUse>
+                    <parameters>true</parameters>-->
                 </configuration>
             </plugin>
             <plugin>
