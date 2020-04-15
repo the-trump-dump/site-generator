@@ -55,12 +55,7 @@ open class MustacheTemplateService(
 	}
 
 	override fun monthly(yearMonth: YearMonth, links: Map<String, List<Link>>): String {
-		val listOfKeyAndLinks =
-				links
-						.map { KeyAndLinks(it.key, linkMaps(it.value)) }
-						.sortedWith(Comparator { o1, o2 -> o1.key.compareTo(o2.key) })
-		val map = mapOf("yearAndMonth" to yearMonth, "dates" to listOfKeyAndLinks)
-		return this.frame(this.monthly.execute(map))
+		return this.frame(monthlyWithoutFrame(yearMonth, links))
 	}
 
 	override fun monthlyWithoutFrame(yearMonth: YearMonth, links: Map<String, List<Link>>): String {
@@ -68,6 +63,7 @@ open class MustacheTemplateService(
 				links
 						.map { KeyAndLinks(it.key, linkMaps(it.value)) }
 						.sortedWith(Comparator { o1, o2 -> o1.key.compareTo(o2.key) })
+						.reversed()
 		val map = mapOf("yearAndMonth" to yearMonth, "dates" to listOfKeyAndLinks)
 		return this.monthly.execute(map)
 	}
@@ -123,7 +119,7 @@ open class MustacheTemplateService(
 		// todo this should be moved into a mustache template
 		val bodyFormat = """
 				 <div>
-						<H1> %s </H1>
+						<H2> %s </H2>
 						<DIV> %s </DIV>
 				</div>
 					"""
