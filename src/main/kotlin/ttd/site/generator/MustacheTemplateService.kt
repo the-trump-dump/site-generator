@@ -74,7 +74,6 @@ open class MustacheTemplateService(
 		return this.frame(this.daily.execute(context))
 	}
 
-
 	/**
 	 * this renders a page that has the years and the months, as well as the latest month's worth of content.
 	 */
@@ -86,7 +85,7 @@ open class MustacheTemplateService(
 	}
 
 	override fun years(yearAndMonths: List<YearMonth>): String {
-		Assert.isTrue(yearAndMonths.isNotEmpty(), "there must be at least one element in the " + YearMonth::class.java.name + " collection.")
+		Assert.isTrue(yearAndMonths.isNotEmpty(), "there must be at least one element in the ${YearMonth::class.java.name } collection.")
 
 		val yearToMonths = mutableMapOf<String, MutableList<YearMonth>>()
 		yearAndMonths.forEach { yearToMonths.computeIfAbsent(it.year.toString() + "") { mutableListOf() }.add(it) }
@@ -115,8 +114,6 @@ open class MustacheTemplateService(
 	}
 
 	private fun renderYearFragmentGiven(year: String, months: List<YearMonth>): String {
-		// todo render the months as Months!
-		// todo this should be moved into a mustache template
 		val bodyFormat = """
 				 <div>
 						<H2> %s </H2>
