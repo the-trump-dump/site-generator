@@ -16,7 +16,7 @@ import java.io.FileWriter
 @Configuration
 class Step6Configuration(
 		private val sbf: StepBuilderFactory,
-		private val state: SiteGenerationJobState ,
+		private val state: SiteGenerationJobState,
 		private val jdbcTemplate: JdbcTemplate,
 		private val properties: SiteGeneratorConfigurationProperties,
 		private val templateService: TemplateService) {
@@ -30,11 +30,11 @@ class Step6Configuration(
 				.tasklet { _: StepContribution, _: ChunkContext ->
 
 					val latestYearMonth: YearMonth = state.latestYearMonth.get() //context
-			/*				.stepContext
-							.stepExecution
-							.jobExecution
-							.executionContext
-							.get("latest") as YearMonth*/
+					/*				.stepContext
+									.stepExecution
+									.jobExecution
+									.executionContext
+									.get("latest") as YearMonth*/
 
 					log.info("the latest is ${latestYearMonth} ")
 
@@ -42,7 +42,7 @@ class Step6Configuration(
 					BufferedWriter(FileWriter(File(this.properties.contentDirectory, "index.html"))).use {
 						it.write(indexHtml)
 					}
-					RepeatStatus.FINISHED;
+					RepeatStatus.FINISHED
 				} //
 				.build()
 	}
