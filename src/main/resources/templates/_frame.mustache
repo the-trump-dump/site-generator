@@ -4,20 +4,42 @@
     <title>
         The Daily Trump Dump
     </title>
+    <!--
+        Development
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    -->
+
+
+    <!--
+        Production
+        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    -->
 
 </head>
 <body>
 <div id="menu">
-    <a href="/"> Home
+    <a href="/">
+        Home
     </a>
 </div>
-<div style="top: 50px; width: 190px" id="years">
+<div style="top: 50px; width: 100px" id="years">
     {{{ years }}}
 </div>
-<div style="top: 50px; left: 200px; position: absolute ;   " id="body">
+<div style="top: 50px; left: 120px; position: absolute ;   " id="body">
     {{{ body }}}
 </div>
 
+<script>
 
+    window.addEventListener('load', (e) => {
+        Array
+                .from(document.getElementsByTagName('a'))
+                .forEach((linkElement) => {
+                    linkElement.setAttribute('target', '_href');
+                });
+    });
+
+
+</script>
 </body>
 </html>

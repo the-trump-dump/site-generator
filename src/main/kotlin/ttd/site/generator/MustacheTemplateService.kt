@@ -92,7 +92,9 @@ open class MustacheTemplateService(
 	}
 
 	private fun frame(body: String) =
-			this._frame.execute(mapOf("body" to body, "years" to fileNameResolver("years.include"), "built" to Instant.now().toString()))
+			this._frame.execute(mapOf("body" to body,
+					"years" to fileNameResolver("years.include"),
+					"built" to Instant.now().toString()))
 
 	private fun buildMapForLink(lien: Link): Map<String, Any> =
 			mutableMapOf<String, Any>()
