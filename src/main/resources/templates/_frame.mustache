@@ -28,18 +28,14 @@
 <div style="top: 50px; left: 120px; position: absolute ;   " id="body">
     {{{ body }}}
 </div>
-
 <script>
-
-    window.addEventListener('load', (e) => {
+    window.addEventListener('load', () => {
         Array
                 .from(document.getElementsByTagName('a'))
                 .forEach((linkElement) => {
                     linkElement.setAttribute('target', '_href');
                 });
     });
-
-
 </script>
 </body>
 </html>
