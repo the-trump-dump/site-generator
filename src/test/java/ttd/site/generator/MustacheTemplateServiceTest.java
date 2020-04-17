@@ -40,6 +40,7 @@ public class MustacheTemplateServiceTest {
 		Assert.assertNotNull("the template service must not be null!", this.ts);
 	}
 
+/*
 	@Test
 	public void replace() {
 		String content = " <a class=\"link\" href=\"_URL_\" name =\"_ID_\" id=\"_ID_\">_DESC_</a>";
@@ -48,6 +49,12 @@ public class MustacheTemplateServiceTest {
 		String replaced = ts.replaceString(content, find, replace);
 		Assert.assertEquals(replaced,
 				" <a class=\"link\" href=\"_URL_\" name =\"_ID_\" id=\"_ID_\">Treasury probing $25K Mnuchin flight from New York to DC | TheHill</a>");
+	}
+*/
+
+	@Test
+	public void buildHtml ()  {
+
 	}
 
 	private List<Link> generateLinks(int count) {

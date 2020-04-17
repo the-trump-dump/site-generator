@@ -1,5 +1,6 @@
 package ttd.site.generator
 
+import com.joshlong.templates.MarkdownService
 import com.samskivert.mustache.Mustache
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -14,16 +15,18 @@ class TemplateServiceConfiguration {
 
 	@Bean
 	fun templateService(compiler: Mustache.Compiler,
+	                    ms : MarkdownService ,
 	                    sg: SiteGeneratorConfigurationProperties,
 	                    tc: TemplateServiceConfigurationProperties) =
 			MustacheTemplateService(
 					{ read(File(sg.contentDirectory, it)) },
 					compiler,
+					ms,
 					tc.daily,
 					tc.index,
 					tc.monthly,
 					tc.frame,
-					tc.list,
+//					tc.list,
 					tc.years,
 					tc.year,
 					tc.charset
