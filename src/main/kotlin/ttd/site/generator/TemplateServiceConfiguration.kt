@@ -25,6 +25,7 @@ class TemplateServiceConfiguration {
 					tc.frame,
 					tc.list,
 					tc.years,
+					tc.year,
 					tc.charset
 			)
 

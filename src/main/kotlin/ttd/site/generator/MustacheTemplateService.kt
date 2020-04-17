@@ -25,6 +25,7 @@ open class MustacheTemplateService(
 		frame: Resource,
 		list: Resource,
 		years: Resource,
+		year: Resource,
 		charset: Charset
 ) :
 		TemplateService {
@@ -39,6 +40,7 @@ open class MustacheTemplateService(
 	private val _list = createTemplate(list)
 	private val _frame = createTemplate(frame)
 	private val _years = createTemplate(years)
+	private val _year = createTemplate(year)
 
 	companion object {
 		const val URL_MARKER = "_URL_"
@@ -59,6 +61,9 @@ open class MustacheTemplateService(
 	}
 
 	override fun monthlyWithoutFrame(yearMonth: YearMonth, links: Map<String, List<Link>>): String {
+		val linkMaps: (List<Link>) -> List<Map<String, Any>> = {
+			it.stream().map(this::buildMapForLink).collect(Collectors.toList())
+		}
 		val listOfKeyAndLinks =
 				links
 						.map { KeyAndLinks(it.key, linkMaps(it.value)) }
@@ -84,11 +89,11 @@ open class MustacheTemplateService(
 		return frame(index)
 	}
 
-	override fun years(yearAndMonths: List<YearMonth>): String {
-		Assert.isTrue(yearAndMonths.isNotEmpty(), "there must be at least one element in the ${YearMonth::class.java.name } collection.")
+	override fun years(yearMonths: List<YearMonth>): String {
+		Assert.isTrue(yearMonths.isNotEmpty(), "there must be at least one element in the ${YearMonth::class.java.name} collection.")
 
 		val yearToMonths = mutableMapOf<String, MutableList<YearMonth>>()
-		yearAndMonths.forEach { yearToMonths.computeIfAbsent(it.year.toString() + "") { mutableListOf() }.add(it) }
+		yearMonths.forEach { yearToMonths.computeIfAbsent(it.year.toString() + "") { mutableListOf() }.add(it) }
 
 		val sortedYears = ArrayList(yearToMonths.keys)
 		sortedYears.sortWith(Comparator.naturalOrder())
@@ -98,37 +103,16 @@ open class MustacheTemplateService(
 				.map {
 					val months = yearToMonths[it]!!
 					months.sortedWith(java.util.Comparator { obj: YearMonth, other: YearMonth -> obj.compareTo(other) })
-					renderYearFragmentGiven(it, months)
+					_year.execute(mapOf("year" to it, "months" to months))
 				}
 
 		return this._years.execute(mapOf("years" to htmlForEachYear))
 	}
 
-
 	private fun frame(body: String) = this._frame.execute(mapOf("body" to body,
 			"years" to fileNameResolver("years.include"),
 			"built" to Instant.now().toString()))
 
-	private fun linkMaps(links: List<Link>): List<Map<String, Any>> {
-		return links.stream().map(this::buildMapForLink).collect(Collectors.toList())
-	}
-
-	private fun renderYearFragmentGiven(year: String, months: List<YearMonth>): String {
-		val bodyFormat = """
-				 <div>
-						<H2> %s </H2>
-						<DIV> %s </DIV>
-				</div>
-					"""
-		val linkFormat = """
-				<a href="%s.html">%s</a>
-				"""
-		val html = months
-				.stream()
-				.map { ym -> String.format(linkFormat, ym.toString(), ym.toString()) }
-				.collect(Collectors.joining())
-		return String.format(bodyFormat, year, html)
-	}
 
 	private fun buildMapForLink(lien: Link): Map<String, Any> {
 		val linkMapForRendering = mutableMapOf<String, Any>()
