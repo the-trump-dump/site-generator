@@ -83,7 +83,9 @@ open class MustacheTemplateService(
 		val htmlForEachYear = sortedYears
 				.reversed()
 				.map {
-					val months = yearToMonths[it]!!.sortedWith(java.util.Comparator { a, b -> a.compareTo(b) })
+					val months = yearToMonths[it]!!.sortedWith(java.util.Comparator { a, b -> a.compareTo(b) }).map {
+						mapOf( "name" to it.toMonthString() , "page" to it.toString())
+					}
 					this._year.execute(mapOf("year" to it, "months" to months))
 				}
 

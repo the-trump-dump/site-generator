@@ -20,6 +20,8 @@ class YearMonth(val year: Int, val month: Int) : Comparable<YearMonth> {
 			DateFormatSymbols.getInstance(locale).months[month - 1]
 
 
+	fun toMonthString() = getMonthAsTextByLocale(this.month)
+
 	fun toMonthCommaYearString() = "${getMonthAsTextByLocale(this.month)}, ${this.year}"
 
 

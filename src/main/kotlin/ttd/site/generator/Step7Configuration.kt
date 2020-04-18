@@ -32,7 +32,6 @@ class Step7Configuration(
 				.build()
 	}
 
-
 	companion object {
 		const val STEP_NAME = "step7"
 	}
