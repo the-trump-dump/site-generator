@@ -1,5 +1,8 @@
 package ttd.site.generator
 
+import java.text.DateFormatSymbols
+import java.util.*
+
 class YearMonth(val year: Int, val month: Int) : Comparable<YearMonth> {
 
 	override fun compareTo(other: YearMonth): Int = other.toString().compareTo(toString())
@@ -12,6 +15,13 @@ class YearMonth(val year: Int, val month: Int) : Comparable<YearMonth> {
 			text
 		}
 	}
+
+	private fun getMonthAsTextByLocale(month: Int, locale: Locale = Locale.US) =
+			DateFormatSymbols.getInstance(locale).months[month - 1]
+
+
+	fun toMonthCommaYearString() = "${getMonthAsTextByLocale(this.month)}, ${this.year}"
+
 
 	override fun toString(): String {
 		val y = this.year

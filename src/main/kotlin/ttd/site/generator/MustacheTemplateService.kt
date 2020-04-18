@@ -48,9 +48,6 @@ open class MustacheTemplateService(
 		return this.frame(monthlyWithoutFrame(yearMonth, links))
 	}
 
-	private fun getMonthAsTextByLocale(month: Int, locale: Locale = Locale.US) =
-			DateFormatSymbols.getInstance(locale).months[month - 1]
-
 	override fun monthlyWithoutFrame(yearMonth: YearMonth, links: Map<String, List<Link>>): String {
 		val newMap = mutableMapOf<String, List<Map<String, Any>>>()
 		links.forEach { (k, list) ->
@@ -60,7 +57,7 @@ open class MustacheTemplateService(
 			}
 		}
 		val dates = newMap.entries.sortedWith(Comparator { o1, o2 -> o1.key.compareTo(o2.key) }).reversed()
-		val map = mapOf("yearAndMonth" to yearMonth, "dates" to dates)
+		val map = mapOf("yearAndMonth" to yearMonth.toMonthCommaYearString(), "dates" to dates)
 		return this.monthly.execute(map)
 	}
 
