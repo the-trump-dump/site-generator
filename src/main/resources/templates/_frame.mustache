@@ -58,8 +58,9 @@
     <div class="row">
         <div class="col-2">
             <div class="col" id="menu">
-                <a href="/"> <img alt="The Trump Dump: a picture of a broken GOP and its idiotic despot of a leader, Donald J. Trump"
-                                  class="logo" src="static/Donald-GOP.png"/>
+                <a href="/"> <img
+                        alt="The Trump Dump: a picture of a broken GOP and its idiotic despot of a leader, Donald J. Trump"
+                        class="logo" src="static/Donald-GOP.png"/>
                 </a>
             </div>
         </div>
@@ -75,7 +76,7 @@
             {{{ years }}}
             <!--        YEARS   -->
         </div>
-        <div class="col-10">
+        <div class="col-10 content">
             <!--            CONTENT-->
             {{{ body }}}
             <!--            CONTENT-->
@@ -94,11 +95,9 @@
         crossorigin="anonymous"></script>
 <script>
     window.addEventListener('load', () => {
-        Array
-                .from(document.getElementsByTagName('a'))
-                .forEach((linkElement) => {
-                    linkElement.setAttribute('target', '_href');
-                });
+        $('.content a').each((i, linkElement) => {
+            $(linkElement).attr('target', '_blank');
+        });
     });
 </script>
 
