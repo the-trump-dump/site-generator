@@ -1,6 +1,5 @@
 package ttd.site.generator
 
-import org.apache.commons.logging.LogFactory
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
 import org.springframework.batch.item.ItemProcessor
@@ -61,6 +60,7 @@ class Step5Configuration(
 	}
 
 	private fun writeYearAndMonthBlog(ym: YearMonth, bookmarks: List<Bookmark>) {
+		val contentDirectory = properties.contentDirectory.file
 		val yearMonthKey = ym.toString()
 		val bookmarksByDate = mutableMapOf<String, MutableList<Link>>()
 		val stringListFunction: (String) -> MutableList<Link> = { ArrayList() }
@@ -70,10 +70,10 @@ class Step5Configuration(
 			bookmarksByDate.computeIfAbsent(key, stringListFunction).add(link)
 		}
 
-		write(File(properties.contentDirectory, "$yearMonthKey.html"), templateService.monthly(ym, bookmarksByDate))
+		write(File(contentDirectory, "$yearMonthKey.html"), templateService.monthly(ym, bookmarksByDate))
 
 		if (ym.toString() == siteGenerationJobState.latestYearMonth.get().toString()) {
-			write(File(properties.contentDirectory, "${yearMonthKey}-latest.html"), templateService.monthlyWithoutFrame(ym, bookmarksByDate))
+			write(File(contentDirectory, "${yearMonthKey}-latest.html"), templateService.monthlyWithoutFrame(ym, bookmarksByDate))
 		}
 	}
 

@@ -45,7 +45,7 @@ class Step0Configuration(
 					val yearAndMonths = this.jdbcTemplate.query(newSql) { rs, _ -> YearMonth(rs.getInt("year"), rs.getInt("month")) }
 					yearAndMonths.sortWith(Comparator.naturalOrder())
 					val html = templateService.years(yearAndMonths)
-					val file = File(siteGenerationProperties.contentDirectory, "years.include")
+					val file = File(siteGenerationProperties.contentDirectory.file, "years.include")
 					BufferedWriter(FileWriter(file)).use {
 						it.write(html)
 					}

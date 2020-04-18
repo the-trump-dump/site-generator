@@ -15,7 +15,7 @@ class BlogItemWriter(
 	private fun writeBlog(publishKey: String, bookmarks: Collection<Bookmark>) {
 		val date = DateUtils.parseYearMonthDay(publishKey)
 		val pk = publishKey.trim { it <= ' ' }
-		val file = File(properties.contentDirectory, "$pk.html")
+		val file = File(properties.contentDirectory.file, "$pk.html")
 		val links = bookmarks.stream()
 				.map { bm: Bookmark -> Link(bm.bookmarkId.toString(), bm.href, bm.description, bm.time) }
 				.collect(Collectors.toSet())

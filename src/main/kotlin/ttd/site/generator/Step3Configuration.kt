@@ -30,7 +30,7 @@ class Step3Configuration(
 	@Bean(STEP_NAME + "Writer")
 	fun writer() =
 			JsonFileItemWriter<Bookmark>(
-					FileSystemResource(File(siteGeneratorConfigurationProperties.contentDirectory, "bookmarks.json")),
+					FileSystemResource(File(siteGeneratorConfigurationProperties.contentDirectory.file, "bookmarks.json")),
 					JacksonJsonObjectMarshaller())
 
 	@Bean(STEP_NAME)

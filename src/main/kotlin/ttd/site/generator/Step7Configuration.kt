@@ -1,6 +1,5 @@
 package ttd.site.generator
 
-import org.apache.commons.logging.LogFactory
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
@@ -8,31 +7,25 @@ import org.springframework.batch.core.scope.context.ChunkContext
 import org.springframework.batch.repeat.RepeatStatus
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import java.io.BufferedWriter
+import org.springframework.util.FileCopyUtils
 import java.io.File
-import java.io.FileWriter
 
 @Configuration
-class Step6Configuration(
+class Step7Configuration(
 		private val sbf: StepBuilderFactory,
-		private val state: SiteGenerationJobState,
-		private val properties: SiteGeneratorConfigurationProperties,
-		private val templateService: TemplateService) {
-
-	private val log = LogFactory.getLog(javaClass)
+		private val properties: SiteGeneratorConfigurationProperties) {
 
 	@Bean(STEP_NAME)
 	fun step(): Step {
-		return sbf //
+		return this.sbf //
 				.get(STEP_NAME) //
 				.tasklet { _: StepContribution, _: ChunkContext ->
-
-					val latestYearMonth: YearMonth = this.state.latestYearMonth.get()
-					log.info("the latest is $latestYearMonth ")
-
-					val indexHtml = this.templateService.index(latestYearMonth)
-					BufferedWriter(FileWriter(File(this.properties.contentDirectory.file, "index.html"))).use {
-						it.write(indexHtml)
+					val dest = File(this.properties.contentDirectory.file, "static")
+					if (!dest.exists()) {
+						dest.mkdirs()
+					}
+					properties.staticAssetsDirectory.file.listFiles()!!.forEach {
+						FileCopyUtils.copy(it, File(dest, it.name))
 					}
 					RepeatStatus.FINISHED
 				} //
@@ -41,6 +34,7 @@ class Step6Configuration(
 
 
 	companion object {
-		const val STEP_NAME = "step6"
+		const val STEP_NAME = "step7"
 	}
+
 }

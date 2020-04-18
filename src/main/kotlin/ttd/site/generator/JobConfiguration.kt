@@ -17,6 +17,7 @@ class JobConfiguration(private val jobBuilderFactory: JobBuilderFactory,  //
                        private val s4: Step4Configuration,  //
                        private val s5: Step5Configuration,  //
                        private val s6: Step6Configuration,  //
+                       private val s7: Step7Configuration,  //
                        private val ss: StepStopConfiguration) {
 	@Bean
 	fun job(): Job {
@@ -28,6 +29,7 @@ class JobConfiguration(private val jobBuilderFactory: JobBuilderFactory,  //
 				.next(s4.step()) //
 				.next(s5.step()) //
 				.next(s6.step()) //
+				.next(s7.step()) //
 				.next(ss.step()) //
 				.incrementer(RunIdIncrementer()) //
 				.build()

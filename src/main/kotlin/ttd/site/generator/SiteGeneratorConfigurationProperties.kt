@@ -2,12 +2,12 @@ package ttd.site.generator
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
-import java.io.File
+import org.springframework.core.io.Resource
 
 @ConstructorBinding
 @ConfigurationProperties("site-generator")
-class SiteGeneratorConfigurationProperties(
-		val contentDirectory: File,
-		val commit: Boolean = true
-//		val clone:Boolean = false
+data class SiteGeneratorConfigurationProperties(
+		val commit: Boolean = true,
+		val contentDirectory: Resource,
+		val staticAssetsDirectory: Resource
 )

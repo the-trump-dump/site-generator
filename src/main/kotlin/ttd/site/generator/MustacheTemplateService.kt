@@ -7,7 +7,6 @@ import org.springframework.core.io.Resource
 import org.springframework.util.Assert
 import java.io.InputStreamReader
 import java.nio.charset.Charset
-import java.text.DateFormatSymbols
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
@@ -52,7 +51,6 @@ open class MustacheTemplateService(
 		val newMap = mutableMapOf<String, List<Map<String, Any>>>()
 		links.forEach { (k, list) ->
 			newMap[k] = list.map {
-//				val linkForMonthly = Link ( it.publishKey , it.href , it.description , it.date )
 				buildMapForLink(it)
 			}
 		}

@@ -19,7 +19,7 @@ class TemplateServiceConfiguration {
 	                    sg: SiteGeneratorConfigurationProperties,
 	                    tc: TemplateServiceConfigurationProperties) =
 			MustacheTemplateService(
-					{ read(File(sg.contentDirectory, it)) },
+					{ read(File(sg.contentDirectory.file, it)) },
 					compiler,
 					ms,
 					tc.daily,

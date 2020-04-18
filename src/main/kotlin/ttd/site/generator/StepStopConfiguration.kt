@@ -30,7 +30,7 @@ class StepStopConfiguration(
 
 					if (properties.commit) {
 						gitTemplate.executeAndPush { git: Git ->
-							Files.walk(properties.contentDirectory.toPath()).forEach { file: Path ->
+							Files.walk(properties.contentDirectory.file.toPath()).forEach { file: Path ->
 								try {
 									git.add().addFilepattern(file.toFile().name).call()
 								} catch (e: GitAPIException) {
