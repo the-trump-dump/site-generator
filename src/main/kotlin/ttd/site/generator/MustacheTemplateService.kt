@@ -7,6 +7,7 @@ import org.springframework.core.io.Resource
 import org.springframework.util.Assert
 import java.io.InputStreamReader
 import java.nio.charset.Charset
+import java.text.DateFormatSymbols
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
@@ -47,6 +48,9 @@ open class MustacheTemplateService(
 		return this.frame(monthlyWithoutFrame(yearMonth, links))
 	}
 
+	private fun getMonthAsTextByLocale(month: Int, locale: Locale = Locale.US) =
+			DateFormatSymbols.getInstance(locale).months[month - 1]
+
 	override fun monthlyWithoutFrame(yearMonth: YearMonth, links: Map<String, List<Link>>): String {
 		val newMap = mutableMapOf<String, List<Map<String, Any>>>()
 		links.forEach { (k, v) ->
@@ -76,15 +80,13 @@ open class MustacheTemplateService(
 		val yearToMonths = mutableMapOf<String, MutableList<YearMonth>>()
 		yearMonths.forEach { yearToMonths.computeIfAbsent(it.year.toString() + "") { mutableListOf() }.add(it) }
 
-		val sortedYears = ArrayList(yearToMonths.keys)
-		sortedYears.sortWith(Comparator.naturalOrder())
+		val sortedYears = ArrayList(yearToMonths.keys).sortedWith(Comparator.naturalOrder())
 
 		val htmlForEachYear = sortedYears
 				.reversed()
 				.map {
-					val months = yearToMonths[it]!!
-					months.sortedWith(java.util.Comparator { obj: YearMonth, other: YearMonth -> obj.compareTo(other) })
-					_year.execute(mapOf("year" to it, "months" to months))
+					val months = yearToMonths[it]!!.sortedWith(java.util.Comparator { a, b -> a.compareTo(b) })
+					this._year.execute(mapOf("year" to it, "months" to months))
 				}
 
 		return this._years.execute(mapOf("years" to htmlForEachYear))
