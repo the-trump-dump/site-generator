@@ -6,4 +6,8 @@ import java.io.File
 
 @ConstructorBinding
 @ConfigurationProperties("site-generator")
-class SiteGeneratorConfigurationProperties(val contentDirectory: File)
+class SiteGeneratorConfigurationProperties(
+		val contentDirectory: File,
+		val commit: Boolean = true
+//		val clone:Boolean = false
+)

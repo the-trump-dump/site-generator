@@ -8,7 +8,6 @@ import org.springframework.batch.core.scope.context.ChunkContext
 import org.springframework.batch.repeat.RepeatStatus
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.jdbc.core.JdbcTemplate
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -17,7 +16,6 @@ import java.io.FileWriter
 class Step6Configuration(
 		private val sbf: StepBuilderFactory,
 		private val state: SiteGenerationJobState,
-		private val jdbcTemplate: JdbcTemplate,
 		private val properties: SiteGeneratorConfigurationProperties,
 		private val templateService: TemplateService) {
 

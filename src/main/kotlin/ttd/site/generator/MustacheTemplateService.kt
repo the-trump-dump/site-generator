@@ -2,7 +2,6 @@ package ttd.site.generator
 
 import com.joshlong.templates.MarkdownService
 import com.samskivert.mustache.Mustache
-import org.commonmark.parser.Parser
 import org.springframework.beans.BeanUtils
 import org.springframework.core.io.Resource
 import org.springframework.util.Assert
@@ -92,22 +91,24 @@ open class MustacheTemplateService(
 	}
 
 	private fun frame(body: String) =
-			this._frame.execute(mapOf("body" to body,
-					"years" to fileNameResolver("years.include"),
-					"built" to Instant.now().toString()))
+			this._frame.execute(mapOf( //
+					"body" to body,//
+					"years" to fileNameResolver("years.include"),//
+					"built" to Instant.now().toString())//
+			)
 
 	private fun buildMapForLink(lien: Link): Map<String, Any> =
 			mutableMapOf<String, Any>()
 					.apply {
+
 						BeanUtils.getPropertyDescriptors(Link::class.java)
-								.forEach { pd ->
-									this[pd.name] = pd.readMethod.invoke(lien)
-								}
+								.forEach { pd -> this[pd.name] = pd.readMethod.invoke(lien) }
+
 						val template =
-								if (listOf(URL_MARKER, ID_MARKER, DESC_MARKER)
-												.firstOrNull { lien.description.contains(it) } != null) {
+								if (listOf(URL_MARKER, ID_MARKER, DESC_MARKER).firstOrNull { lien.description.contains(it) } != null) {
 									lien.description
-								} else "[_DESC_](_URL_)"
+								} else
+									"[_DESC_](_URL_)"
 						this["html"] = buildHtml(template, lien.href, lien.publishKey, lien.description)
 					}
 

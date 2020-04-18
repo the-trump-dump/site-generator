@@ -26,8 +26,6 @@ class Step5Configuration(
 		private val templateService: TemplateService
 ) {
 
-	private val log = LogFactory.getLog(javaClass)
-
 	@Bean(STEP_NAME + "Reader")
 	fun reader() =
 			JdbcCursorItemReaderBuilder<YearMonth>() //

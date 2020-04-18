@@ -27,19 +27,22 @@ class StepStopConfiguration(
 		return sbf //
 				.get(STEP_NAME) //
 				.tasklet { _: StepContribution, _: ChunkContext ->  //
-					gitTemplate.executeAndPush { git: Git ->
-						Files.walk(properties.contentDirectory.toPath()).forEach { file: Path ->
-							try {
-								git.add().addFilepattern(file.toFile().name).call()
-							} catch (e: GitAPIException) {
-								ReflectionUtils.rethrowRuntimeException(e)
+
+					if (properties.commit) {
+						gitTemplate.executeAndPush { git: Git ->
+							Files.walk(properties.contentDirectory.toPath()).forEach { file: Path ->
+								try {
+									git.add().addFilepattern(file.toFile().name).call()
+								} catch (e: GitAPIException) {
+									ReflectionUtils.rethrowRuntimeException(e)
+								}
 							}
+							git.commit()
+									.setAll(true)
+									.setMessage("batch @ " + Instant.now().toString())
+									.setAllowEmpty(true)
+									.call()
 						}
-						git.commit()
-								.setAll(true)
-								.setMessage("batch @ " + Instant.now().toString())
-								.setAllowEmpty(true)
-								.call()
 					}
 					RepeatStatus.FINISHED
 				}
