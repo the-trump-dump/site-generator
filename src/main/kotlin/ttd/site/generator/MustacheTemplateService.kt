@@ -53,8 +53,11 @@ open class MustacheTemplateService(
 
 	override fun monthlyWithoutFrame(yearMonth: YearMonth, links: Map<String, List<Link>>): String {
 		val newMap = mutableMapOf<String, List<Map<String, Any>>>()
-		links.forEach { (k, v) ->
-			newMap[k] = v.map { buildMapForLink(it) }
+		links.forEach { (k, list) ->
+			newMap[k] = list.map {
+//				val linkForMonthly = Link ( it.publishKey , it.href , it.description , it.date )
+				buildMapForLink(it)
+			}
 		}
 		val dates = newMap.entries.sortedWith(Comparator { o1, o2 -> o1.key.compareTo(o2.key) }).reversed()
 		val map = mapOf("yearAndMonth" to yearMonth, "dates" to dates)
@@ -96,29 +99,21 @@ open class MustacheTemplateService(
 			this._frame.execute(mapOf( //
 					"body" to body,//
 					"years" to fileNameResolver("years.include"),//
-					"built" to Instant.now().toString())//
-			)
+					"built" to Instant.now().toString()
+			))
 
-	private fun buildMapForLink(lien: Link): Map<String, Any> =
-			mutableMapOf<String, Any>()
-					.apply {
-
-						BeanUtils.getPropertyDescriptors(Link::class.java)
-								.forEach { pd -> this[pd.name] = pd.readMethod.invoke(lien) }
-
-						val template =
-								if (listOf(URL_MARKER, ID_MARKER, DESC_MARKER).firstOrNull { lien.description.contains(it) } != null) {
-									lien.description
-								} else
-									"[_DESC_](_URL_)"
-						this["html"] = buildHtml(template, lien.href, lien.publishKey, lien.description)
-					}
+	private fun buildMapForLink(link: Link): Map<String, Any> = mutableMapOf<String, Any>()
+			.apply {
+				BeanUtils.getPropertyDescriptors(Link::class.java).forEach { pd -> this[pd.name] = pd.readMethod.invoke(link) }
+				val hasTemplateMarkers = (listOf(URL_MARKER, ID_MARKER, DESC_MARKER).firstOrNull { link.description.contains(it) } != null)
+				val template = if (hasTemplateMarkers) link.description else "[_DESC_](_URL_)"
+				this["html"] = buildHtmlForLink(template, link.href, link.publishKey, link.description)
+			}
 
 
-	private fun buildHtml(template: String, href: String, pk: String, desc: String): String {
+	private fun buildHtmlForLink(template: String, href: String, pk: String, desc: String): String {
 		val atomicReference = AtomicReference(template)
-		mapOf(URL_MARKER to href, ID_MARKER to pk, DESC_MARKER to desc)
-				.forEach { (k, v) -> atomicReference.set(atomicReference.get().replaceAll(k, v)) }
+		mapOf(URL_MARKER to href, ID_MARKER to pk, DESC_MARKER to desc).forEach { (k, v) -> atomicReference.set(atomicReference.get().replaceAll(k, v)) }
 		val html = markdownService.convertMarkdownTemplateToHtml(atomicReference.get()).trim()
 		return if (html.startsWith("<p>") && html.endsWith("</p>")) {
 			html.substring(3, html.length - 4)
