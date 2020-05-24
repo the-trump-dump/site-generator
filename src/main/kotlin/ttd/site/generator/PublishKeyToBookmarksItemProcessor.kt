@@ -11,6 +11,6 @@ class PublishKeyToBookmarksItemProcessor(private val template: JdbcTemplate) :
 
 	override fun process(pk: String): Map<String, Collection<Bookmark>> =
 			Collections.singletonMap(pk,
-					template.query("select * from bookmark where publish_key = ? ", this.bookmarkRowMapper, pk))
+					template.query("select * from bookmark where publish_key = ? and deleted = false", this.bookmarkRowMapper, pk))
 
 }

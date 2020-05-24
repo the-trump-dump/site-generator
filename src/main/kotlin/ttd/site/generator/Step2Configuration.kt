@@ -20,7 +20,7 @@ class Step2Configuration(
 	@Bean(STEP_NAME + "Reader")
 	fun reader() =
 			JdbcCursorItemReaderBuilder<String>() //
-					.sql("select distinct( publish_key) from bookmark order by publish_key") //
+					.sql("select distinct( publish_key) from bookmark b where b.deleted = false order by publish_key") //
 					.dataSource(dataSource) //
 					.rowMapper { rs: ResultSet, _: Int -> rs.getString("publish_key") } //
 					.name(javaClass.simpleName + "#reader") //

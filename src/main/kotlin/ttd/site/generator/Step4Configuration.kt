@@ -21,6 +21,7 @@ class Step4Configuration(
 						jdbcTemplate.update("""
 							insert into bookmark_years_months (year, month, ym_key) 
 									select date_part('year', time), date_part('month', time), concat(date_part('year', time) || '-' || date_part('month', time)) from bookmark b 
+									 where b.deleted = false
 									 on conflict on constraint bookmark_years_months_ym_key_key do nothing  """
 						)
 						RepeatStatus.FINISHED

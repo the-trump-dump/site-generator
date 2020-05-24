@@ -21,7 +21,7 @@ class Step3Configuration(
 	@Bean(STEP_NAME + "Reader")
 	fun reader() =
 			JdbcCursorItemReaderBuilder<Bookmark>() //
-					.sql("select * from bookmark order by publish_key") //
+					.sql("select * from bookmark where deleted = false order by publish_key") //
 					.dataSource(dataSource) //
 					.rowMapper(bookmarkRowMapper) //
 					.name(javaClass.simpleName + "#reader") //

@@ -37,6 +37,7 @@ class Step0Configuration(
 									date_part('year', time) as year,
 									date_part('month', time) as month
 								from bookmark b
+								where b.deleted = false
 							"""
 					val yearAndMonths = this.jdbcTemplate.query(newSql) { rs, _ -> YearMonth(rs.getInt("year"), rs.getInt("month")) }
 					yearAndMonths.sortWith(Comparator.naturalOrder())
