@@ -1,5 +1,6 @@
 package ttd.site.generator
 
+import org.apache.commons.logging.LogFactory
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
@@ -12,28 +13,32 @@ import java.io.File
 
 @Configuration
 class Step7Configuration(
-		private val sbf: StepBuilderFactory,
-		private val properties: SiteGeneratorConfigurationProperties) {
+    private val sbf: StepBuilderFactory,
+    private val properties: SiteGeneratorConfigurationProperties) {
 
-	@Bean(STEP_NAME)
-	fun step(): Step {
-		return this.sbf //
-				.get(STEP_NAME) //
-				.tasklet { _: StepContribution, _: ChunkContext ->
-					val dest = File(this.properties.contentDirectory.file, "static")
-					if (!dest.exists()) {
-						dest.mkdirs()
-					}
-					properties.staticAssetsDirectory.file.listFiles()!!.forEach {
-						FileCopyUtils.copy(it, File(dest, it.name))
-					}
-					RepeatStatus.FINISHED
-				} //
-				.build()
-	}
+  private val log = LogFactory.getLog(javaClass)
 
-	companion object {
-		const val STEP_NAME = "step7"
-	}
+  @Bean(STEP_NAME)
+  fun step(): Step {
+    return this.sbf //
+        .get(STEP_NAME) //
+        .tasklet { _: StepContribution, _: ChunkContext ->
+          val dest = File(this.properties.contentDirectory.file, "static")
+          if (!dest.exists()) {
+            dest.mkdirs()
+          }
+          properties.staticAssetsDirectory.file.listFiles()!!.forEach {
+            val destination = File(dest, it.name)
+            log.debug("copying ${it.absolutePath} to ${destination.absolutePath}")
+            FileCopyUtils.copy(it, destination)
+          }
+          RepeatStatus.FINISHED
+        } //
+        .build()
+  }
+
+  companion object {
+    const val STEP_NAME = "step7"
+  }
 
 }
