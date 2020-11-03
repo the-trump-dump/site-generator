@@ -10,9 +10,6 @@ env:
   SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
   SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
 
-
-
-
 on:
   push:
     branches: [ master ]
