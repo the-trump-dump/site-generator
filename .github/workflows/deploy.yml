@@ -1,22 +1,21 @@
-name: CI
+name: API
 
 env:
+  GCLOUD_ZONE : ${{ secrets.GCLOUD_ZONE  }}
+  GCLOUD_PROJECT: ${{ secrets.GCLOUD_PROJECT  }}
+  GCLOUD_SA_KEY: ${{ secrets.GCLOUD_SA_KEY }}
+  GKE_CLUSTER_NAME : ${{ secrets.GKE_CLUSTER_NAME  }}
+  PINBOARD_TOKEN: ${{ secrets.PINBOARD_TOKEN }}
+  ARTIFACTORY_API_TOKEN_SECRET: ${{ secrets.ARTIFACTORY_API_TOKEN_SECRET }}
   ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME  }}
-  ARTIFACTORY_API_TOKEN_SECRET: ${{ secrets.ARTIFACTORY_API_TOKEN_SECRET  }}
   ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD  }}
-  GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-  GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
-  SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-  SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
-  SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
 on:
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-  schedule:
-    - cron:  '50 * * * *'
 
 jobs:
 
@@ -24,12 +23,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      - uses: google-github-actions/setup-gcloud@master
+        with:
+          version: '290.0.1'
+          service_account_key: ${{ secrets.GCLOUD_SA_KEY }}
+          project_id: ${{ env.GCLOUD_PROJECT }}
+          export_default_credentials: true
+
+      - run: |-
+          gcloud config set project $GCLOUD_PROJECT
+          gcloud --quiet auth configure-docker
+          gcloud container clusters get-credentials $GKE_CLUSTER_NAME --zone "$GCLOUD_ZONE" --project $GCLOUD_PROJECT
+
       - uses: actions/checkout@v2
 
-      - name: Set up JDK 14
+      - name: Set up JDK 15
         uses: actions/setup-java@v1
         with:
-          java-version: 14
+          java-version: 15
 
       - name: Cache Maven packages
         uses: actions/cache@v1
@@ -38,5 +49,5 @@ jobs:
           key: ${{ runner.os }}-m2
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Run with Maven
-        run: ./mvnw spring-boot:run
+      - name: Deploy
+        run: cd $GITHUB_WORKSPACE/.github/workflows ; ./deploy.sh
