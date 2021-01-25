@@ -31,7 +31,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: twi-ttd-site-generator-config
-type: Opaque
 data:
   SPRING_PROFILES_ACTIVE: "cloud"
   SPRING_DATASOURCE_PASSWORD: "${DB_PW}"
