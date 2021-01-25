@@ -8,6 +8,8 @@ env:
   ARTIFACTORY_API_TOKEN_SECRET: ${{ secrets.ARTIFACTORY_API_TOKEN_SECRET }}
   ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
   ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+  GIT_PASSWORD: ${{ secrets.$GIT_PASSWORD }}
+  GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
   DB_DB: ${{ secrets.DB_DB }}
   DB_HOST: ${{ secrets.DB_HOST  }}
   DB_PW: ${{ secrets.DB_PW  }}
