@@ -43,4 +43,4 @@ EOF
 kubectl apply -n $TWI_NS -f .
 rm ${SECRETS_FN}
 cd ${GITHUB_WORKSPACE}
-kubectl create job --from=cronjob/cronjob.batch/twi-ttd-site-generator-cronjob  twi-ttd-site-generator-cronjob-${RANDOM} -n $TWI_NS
+kubectl create job --from=cronjob.batch/twi-ttd-site-generator-cronjob  twi-ttd-site-generator-cronjob-${RANDOM} -n $TWI_NS
