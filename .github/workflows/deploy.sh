@@ -22,21 +22,34 @@ docker push ${GCR_IMAGE_NAME}:latest
 docker push ${GCR_IMAGE_NAME}:${IMAGE_TAG}
 
 ## Deploy the application to Kubernetes
-SECRETS_FN=secrets.env
+cd $GITHUB_WORKSPACE/deploy
+SECRETS_FN=secrets.yaml
 touch $SECRETS_FN
-echo writing to "$SECRETS_FN "
+echo writing to "${SECRETS_FN}..."
+#cat <<EOF >${SECRETS_FN}
+#SPRING_PROFILES_ACTIVE=cloud
+#SPRING_DATASOURCE_PASSWORD=${DB_PW}
+#SPRING_DATASOURCE_USERNAME=${DB_USER}
+#SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_HOST}:5432/${DB_DB}
+#GIT_PASSWORD=$GIT_PASSWORD
+#GIT_USERNAME=$GIT_USERNAME
+#EOF
 cat <<EOF >${SECRETS_FN}
-BP_MODE=${BP_MODE_LOWERCASE}
-SPRING_PROFILES_ACTIVE=cloud
-SPRING_DATASOURCE_PASSWORD=${DB_PW}
-SPRING_DATASOURCE_USERNAME=${DB_USER}
-SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_HOST}:5432/${DB_DB}
-GIT_PASSWORD=$GIT_PASSWORD
-GIT_USERNAME=$GIT_USERNAME
+apiVersion: v1
+kind: Secret
+metadata:
+  name: twi-ttd-secrets
+type: Opaque
+data:
+  SPRING_PROFILES_ACTIVE: cloud
+  SPRING_DATASOURCE_PASSWORD: $DB_PW
+  SPRING_DATASOURCE_USERNAME: $DB_USER
+  SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:5432/${DB_DB}
+  GIT_PASSWORD:  $GIT_PASSWORD
+  GIT_USERNAME : $GIT_USERNAME
 EOF
 
-cd $OD
-kustomize edit set image $GCR_IMAGE_NAME=$IMAGE_NAME
-kustomize build ${OD} | kubectl apply -f -
 
+kubectl apply -f .
 rm $SECRETS_FN
+cd $GITHUB_WORKSPACE
