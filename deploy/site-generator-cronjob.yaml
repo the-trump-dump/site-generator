@@ -4,7 +4,7 @@ kind: CronJob
 metadata:
   name:   twi-ttd-site-generator-cronjob
 spec:
-  schedule: "10 * * * *"
+  schedule: "50 * * * *"
   jobTemplate:
     spec:
       template:

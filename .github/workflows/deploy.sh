@@ -40,6 +40,8 @@ data:
   GIT_USERNAME : "${GIT_PASSWORD}"
 EOF
 
+ls -la
+
 kubectl apply -n $TWI_NS -f .
 rm ${SECRETS_FN}
 cd ${GITHUB_WORKSPACE}
