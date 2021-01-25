@@ -14,6 +14,8 @@ spec:
               image: gcr.io/bootiful/twi-ttd-site-generator:latest
               imagePullPolicy: Always
               envFrom:
+                - secretRef:
+                    name: twi-ttd-secrets
                 - configMapRef:
                     name:   twi-ttd-configmap
           restartPolicy: OnFailure
