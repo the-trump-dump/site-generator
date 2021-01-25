@@ -40,7 +40,7 @@ data:
   GIT_USERNAME : "${GIT_PASSWORD}"
 EOF
 
-kubectl apply -f .
+kubectl apply -n $TWI_NS -f .
 rm ${SECRETS_FN}
 cd ${GITHUB_WORKSPACE}
 #kubectl create job --from=cronjob/${NS}-twi-twitter-ingest-cronjob ${NS}-twi-twitter-ingest-cronjob-${RANDOM} -n $NS
