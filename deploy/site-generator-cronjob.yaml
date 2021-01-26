@@ -10,12 +10,12 @@ spec:
       template:
         spec:
           containers:
-            - name:  site-generator-cronjob-container
+            - name:  twi-ttd-site-generator-cronjob-container
               image: gcr.io/bootiful/twi-ttd-site-generator:latest
               imagePullPolicy: Always
               envFrom:
                 - configMapRef:
-                    name: twi-ttd-site-generator-config
+                    name: ttd-twi-site-generator-config
                 - configMapRef:
-                    name: twi-ttd-configmap
+                    name: ttd-twi-configmap
           restartPolicy: OnFailure

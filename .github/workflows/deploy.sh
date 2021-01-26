@@ -30,7 +30,7 @@ cat <<EOF >${SECRETS_FN}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: twi-ttd-site-generator-config
+  name: ttd-twi-site-generator-config
 data:
   SPRING_PROFILES_ACTIVE: "cloud"
   SPRING_DATASOURCE_PASSWORD: "${DB_PW}"
