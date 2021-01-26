@@ -14,31 +14,33 @@ import java.io.File
 @Configuration
 class Step7Configuration(
     private val sbf: StepBuilderFactory,
-    private val properties: SiteGeneratorConfigurationProperties) {
+    private val properties: SiteGeneratorConfigurationProperties
+) {
 
-  private val log = LogFactory.getLog(javaClass)
+    private val log = LogFactory.getLog(javaClass)
 
-  @Bean(STEP_NAME)
-  fun step(): Step {
-    return this.sbf //
-        .get(STEP_NAME) //
-        .tasklet { _: StepContribution, _: ChunkContext ->
-          val dest = File(this.properties.contentDirectory.file, "static")
-          if (!dest.exists()) {
-            dest.mkdirs()
-          }
-          properties.staticAssetsDirectory.file.listFiles()!!.forEach {
-            val destination = File(dest, it.name)
-            log.debug("copying ${it.absolutePath} to ${destination.absolutePath}")
-            FileCopyUtils.copy(it, destination)
-          }
-          RepeatStatus.FINISHED
-        } //
-        .build()
-  }
+    @Bean(STEP_NAME)
+    fun step(): Step {
+        return this.sbf //
+            .get(STEP_NAME) //
+            .tasklet { _: StepContribution, _: ChunkContext ->
+                log.info("step 7")
+                val dest = File(this.properties.contentDirectory.file, "static")
+                if (!dest.exists()) {
+                    dest.mkdirs()
+                }
+                properties.staticAssetsDirectory.file.listFiles()!!.forEach {
+                    val destination = File(dest, it.name)
+                    log.debug("copying ${it.absolutePath} to ${destination.absolutePath}")
+                    FileCopyUtils.copy(it, destination)
+                }
+                RepeatStatus.FINISHED
+            } //
+            .build()
+    }
 
-  companion object {
-    const val STEP_NAME = "step7"
-  }
+    companion object {
+        const val STEP_NAME = "step7"
+    }
 
 }

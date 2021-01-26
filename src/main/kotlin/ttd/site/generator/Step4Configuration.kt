@@ -1,5 +1,6 @@
 package ttd.site.generator
 
+import org.apache.commons.logging.LogFactory
 import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
 import org.springframework.batch.core.scope.context.ChunkContext
@@ -13,11 +14,15 @@ class Step4Configuration(
 		private val sbf: StepBuilderFactory,
 		private val jdbcTemplate: JdbcTemplate) {
 
+	private val log = LogFactory.getLog(javaClass)
+
+
 	@Bean(STEP_NAME)
 	fun step() =
 			sbf //
 					.get(STEP_NAME) //
 					.tasklet { _: StepContribution?, _: ChunkContext? ->  //
+						log.info ("step 4")
 						jdbcTemplate.update("""
 							insert into bookmark_years_months (year, month, ym_key) 
 									select date_part('year', time), date_part('month', time), concat(date_part('year', time) || '-' || date_part('month', time)) from bookmark b 

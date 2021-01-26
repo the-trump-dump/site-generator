@@ -1,5 +1,6 @@
 package ttd.site.generator
 
+import org.apache.commons.logging.LogFactory
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
 import org.springframework.batch.item.ItemProcessor
@@ -15,15 +16,18 @@ import java.sql.ResultSet
 import java.util.*
 import javax.sql.DataSource
 
+
 @Configuration
 class Step5Configuration(
-		private val siteGenerationJobState: SiteGenerationJobState,
-		private val properties: SiteGeneratorConfigurationProperties,
-		private val sbf: StepBuilderFactory,
-		private val template: JdbcTemplate,
-		private val dataSource: DataSource,
-		private val templateService: TemplateService
+	private val siteGenerationJobState: SiteGenerationJobState,
+	private val properties: SiteGeneratorConfigurationProperties,
+	private val sbf: StepBuilderFactory,
+	private val template: JdbcTemplate,
+	private val dataSource: DataSource,
+	private val templateService: TemplateService
 ) {
+
+	private val log = LogFactory.getLog(javaClass)
 
 	@Bean(STEP_NAME + "Reader")
 	fun reader() =

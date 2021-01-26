@@ -1,5 +1,6 @@
 package ttd.site.generator
 
+import org.apache.commons.logging.LogFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder
 import org.springframework.context.annotation.Bean
@@ -16,6 +17,9 @@ class Step2Configuration(
 		private val templateService: TemplateService,
 		private val properties: SiteGeneratorConfigurationProperties
 ) {
+
+	private val log = LogFactory.getLog(javaClass)
+
 
 	@Bean(STEP_NAME + "Reader")
 	fun reader() =

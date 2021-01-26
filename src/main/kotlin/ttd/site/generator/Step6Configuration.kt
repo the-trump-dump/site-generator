@@ -27,6 +27,7 @@ class Step6Configuration(
 				.get(STEP_NAME) //
 				.tasklet { _: StepContribution, _: ChunkContext ->
 
+					log.info ( "step 6")
 					val latestYearMonth: YearMonth = this.state.latestYearMonth.get()
 					log.info("the latest is $latestYearMonth ")
 

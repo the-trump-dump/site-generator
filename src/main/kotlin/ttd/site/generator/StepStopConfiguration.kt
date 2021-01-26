@@ -1,6 +1,7 @@
 package ttd.site.generator
 
 import com.joshlong.git.GitTemplate
+import org.apache.commons.logging.LogFactory
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.errors.GitAPIException
 import org.springframework.batch.core.Step
@@ -17,39 +18,42 @@ import java.time.Instant
 
 @Configuration
 class StepStopConfiguration(
-		private val sbf: StepBuilderFactory,
-		private val gitTemplate: GitTemplate,
-		private val properties: SiteGeneratorConfigurationProperties
+    private val sbf: StepBuilderFactory,
+    private val gitTemplate: GitTemplate,
+    private val properties: SiteGeneratorConfigurationProperties
 ) {
 
-	@Bean(STEP_NAME)
-	fun step(): Step {
-		return sbf //
-				.get(STEP_NAME) //
-				.tasklet { _: StepContribution, _: ChunkContext ->  //
+    private val log = LogFactory.getLog(javaClass)
 
-					if (properties.commit) {
-						gitTemplate.executeAndPush { git: Git ->
-							Files.walk(properties.contentDirectory.file.toPath()).forEach { file: Path ->
-								try {
-									git.add().addFilepattern(file.toFile().name).call()
-								} catch (e: GitAPIException) {
-									ReflectionUtils.rethrowRuntimeException(e)
-								}
-							}
-							git.commit()
-									.setAll(true)
-									.setMessage("batch @ " + Instant.now().toString())
-									.setAllowEmpty(true)
-									.call()
-						}
-					}
-					RepeatStatus.FINISHED
-				}
-				.build()
-	}
+    @Bean(STEP_NAME)
+    fun step(): Step {
+        return sbf //
+            .get(STEP_NAME) //
+            .tasklet { _: StepContribution, _: ChunkContext ->  //
 
-	companion object {
-		private const val STEP_NAME = "stepStop"
-	}
+                log.info("step 8")
+                if (properties.commit) {
+                    gitTemplate.executeAndPush { git: Git ->
+                        Files.walk(properties.contentDirectory.file.toPath()).forEach { file: Path ->
+                            try {
+                                git.add().addFilepattern(file.toFile().name).call()
+                            } catch (e: GitAPIException) {
+                                ReflectionUtils.rethrowRuntimeException(e)
+                            }
+                        }
+                        git.commit()
+                            .setAll(true)
+                            .setMessage("batch @ " + Instant.now().toString())
+                            .setAllowEmpty(true)
+                            .call()
+                    }
+                }
+                RepeatStatus.FINISHED
+            }
+            .build()
+    }
+
+    companion object {
+        private const val STEP_NAME = "stepStop"
+    }
 }
