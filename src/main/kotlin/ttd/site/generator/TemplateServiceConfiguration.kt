@@ -26,7 +26,6 @@ class TemplateServiceConfiguration {
 					tc.index,
 					tc.monthly,
 					tc.frame,
-//					tc.list,
 					tc.years,
 					tc.year,
 					tc.charset
