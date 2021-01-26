@@ -34,7 +34,7 @@ class Step0Configuration(
         return sbf //
             .get(STEP_NAME) //
             .tasklet { _: StepContribution, _: ChunkContext ->
-                log.info ("step 0")
+                log.info("step 0")
                 val newSql =
                     """
 								select distinct

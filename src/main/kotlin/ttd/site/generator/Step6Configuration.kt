@@ -14,34 +14,35 @@ import java.io.FileWriter
 
 @Configuration
 class Step6Configuration(
-		private val sbf: StepBuilderFactory,
-		private val state: SiteGenerationJobState,
-		private val properties: SiteGeneratorConfigurationProperties,
-		private val templateService: TemplateService) {
+    private val sbf: StepBuilderFactory,
+    private val state: SiteGenerationJobState,
+    private val properties: SiteGeneratorConfigurationProperties,
+    private val templateService: TemplateService
+) {
 
-	private val log = LogFactory.getLog(javaClass)
+    private val log = LogFactory.getLog(javaClass)
 
-	@Bean(STEP_NAME)
-	fun step(): Step {
-		return sbf //
-				.get(STEP_NAME) //
-				.tasklet { _: StepContribution, _: ChunkContext ->
+    @Bean(STEP_NAME)
+    fun step(): Step {
+        return sbf //
+            .get(STEP_NAME) //
+            .tasklet { _: StepContribution, _: ChunkContext ->
 
-					log.info ( "step 6")
-					val latestYearMonth: YearMonth = this.state.latestYearMonth.get()
-					log.info("the latest is $latestYearMonth ")
+                log.info("step 6")
+                val latestYearMonth: YearMonth = this.state.latestYearMonth.get()
+                log.info("the latest is $latestYearMonth ")
 
-					val indexHtml = this.templateService.index(latestYearMonth)
-					BufferedWriter(FileWriter(File(this.properties.contentDirectory.file, "index.html"))).use {
-						it.write(indexHtml)
-					}
-					RepeatStatus.FINISHED
-				} //
-				.build()
-	}
+                val indexHtml = this.templateService.index(latestYearMonth)
+                BufferedWriter(FileWriter(File(this.properties.contentDirectory.file, "index.html"))).use {
+                    it.write(indexHtml)
+                }
+                RepeatStatus.FINISHED
+            } //
+            .build()
+    }
 
 
-	companion object {
-		const val STEP_NAME = "step6"
-	}
+    companion object {
+        const val STEP_NAME = "step6"
+    }
 }

@@ -7,7 +7,7 @@ import org.springframework.core.io.Resource
 @ConstructorBinding
 @ConfigurationProperties("site-generator")
 data class SiteGeneratorConfigurationProperties(
-		val commit: Boolean = true,
-		val contentDirectory: Resource,
-		val staticAssetsDirectory: Resource
+    val commit: Boolean = true,
+    val contentDirectory: Resource,
+    val staticAssetsDirectory: Resource
 )

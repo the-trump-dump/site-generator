@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicReference
 @Component
 class SiteGenerationJobState {
 
-	val buildDate = Instant.now()
-	val latestYearMonth = AtomicReference<YearMonth>()
+    val buildDate = Instant.now()
+    val latestYearMonth = AtomicReference<YearMonth>()
 
 }

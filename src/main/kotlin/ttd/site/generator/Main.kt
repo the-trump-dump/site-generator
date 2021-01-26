@@ -2,7 +2,6 @@ package ttd.site.generator
 
 import org.apache.commons.logging.LogFactory
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing
-import org.springframework.boot.ApplicationRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.context.properties.EnableConfigurationProperties

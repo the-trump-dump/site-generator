@@ -1,6 +1,5 @@
 package ttd.site.generator
 
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.StepContribution

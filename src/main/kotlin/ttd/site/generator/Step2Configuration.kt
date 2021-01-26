@@ -11,40 +11,40 @@ import javax.sql.DataSource
 
 @Configuration
 class Step2Configuration(
-		private val sbf: StepBuilderFactory,
-		private val jdbcTemplate: JdbcTemplate,
-		private val dataSource: DataSource,
-		private val templateService: TemplateService,
-		private val properties: SiteGeneratorConfigurationProperties
+    private val sbf: StepBuilderFactory,
+    private val jdbcTemplate: JdbcTemplate,
+    private val dataSource: DataSource,
+    private val templateService: TemplateService,
+    private val properties: SiteGeneratorConfigurationProperties
 ) {
 
-	private val log = LogFactory.getLog(javaClass)
+    private val log = LogFactory.getLog(javaClass)
 
 
-	@Bean(STEP_NAME + "Reader")
-	fun reader() =
-			JdbcCursorItemReaderBuilder<String>() //
-					.sql("select distinct( publish_key) from bookmark b where b.deleted = false order by publish_key") //
-					.dataSource(dataSource) //
-					.rowMapper { rs: ResultSet, _: Int -> rs.getString("publish_key") } //
-					.name(javaClass.simpleName + "#reader") //
-					.build()
+    @Bean(STEP_NAME + "Reader")
+    fun reader() =
+        JdbcCursorItemReaderBuilder<String>() //
+            .sql("select distinct( publish_key) from bookmark b where b.deleted = false order by publish_key") //
+            .dataSource(dataSource) //
+            .rowMapper { rs: ResultSet, _: Int -> rs.getString("publish_key") } //
+            .name(javaClass.simpleName + "#reader") //
+            .build()
 
-	@Bean
-	fun processor() = PublishKeyToBookmarksItemProcessor(jdbcTemplate)
+    @Bean
+    fun processor() = PublishKeyToBookmarksItemProcessor(jdbcTemplate)
 
-	@Bean(STEP_NAME + "Writer")
-	fun writer() = BlogItemWriter(templateService, properties)
+    @Bean(STEP_NAME + "Writer")
+    fun writer() = BlogItemWriter(templateService, properties)
 
-	@Bean(STEP_NAME)
-	fun step() = sbf[STEP_NAME] //
-			.chunk<String, Map<String, Collection<Bookmark>>>(100) //
-			.reader(reader()) //
-			.processor(processor()) //
-			.writer(writer()) //
-			.build()
+    @Bean(STEP_NAME)
+    fun step() = sbf[STEP_NAME] //
+        .chunk<String, Map<String, Collection<Bookmark>>>(100) //
+        .reader(reader()) //
+        .processor(processor()) //
+        .writer(writer()) //
+        .build()
 
-	companion object {
-		private const val STEP_NAME = "step2"
-	}
+    companion object {
+        private const val STEP_NAME = "step2"
+    }
 }
