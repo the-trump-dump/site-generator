@@ -21,9 +21,7 @@ import java.time.Instant
 @SpringBootApplication
 class Main {
 
-
     private val log = LogFactory.getLog(javaClass)
-
 
     @Bean
     fun dbConnected(jdbc: JdbcTemplate) = ApplicationListener<ApplicationReadyEvent> {
