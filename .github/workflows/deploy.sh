@@ -21,6 +21,7 @@ docker tag "${image_id}" ${GCR_IMAGE_NAME}:${IMAGE_TAG}
 docker push ${GCR_IMAGE_NAME}:latest
 docker push ${GCR_IMAGE_NAME}:${IMAGE_TAG}
 
+
 ## Deploy the application to Kubernetes
 cd $GITHUB_WORKSPACE/deploy
 SECRETS_FN=secrets.yaml
