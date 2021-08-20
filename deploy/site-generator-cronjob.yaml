@@ -1,8 +1,7 @@
----
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name:   twi-ttd-site-generator-cronjob
+  name: twi-ttd-site-generator-cronjob
 spec:
   schedule: "50 * * * *"
   jobTemplate:
