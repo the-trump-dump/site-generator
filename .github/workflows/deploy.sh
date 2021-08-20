@@ -12,9 +12,9 @@ mvn -f ${ROOT_DIR}/../../pom.xml -DskipTests=true \
   -e -Dspring.profiles.active=production  \
   clean \
   package \
+  verify \
+  deploy \
   spring-boot:build-image
-#  verify \
-#  deploy \
 
 
 image_id=$(docker images -q $APP_NAME)
@@ -47,4 +47,5 @@ ls -la
 kubectl apply -n $TWI_NS -f .
 rm ${SECRETS_FN}
 cd ${GITHUB_WORKSPACE}
-#kubectl create job --from=cronjob.batch/twi-ttd-site-generator-cronjob  twi-ttd-site-generator-cronjob-${RANDOM} -n $TWI_NS
+kubectl create job --from=cronjob.batch/twi-ttd-site-generator-cronjob  twi-ttd-site-generator-cronjob-${RANDOM} -n $TWI_NS
+
